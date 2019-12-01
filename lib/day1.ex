@@ -15,26 +15,26 @@ defmodule Day1 do
   end
 
   def sample do
-    sample_input
+    sample_input()
     |> parse_input1
     |> solve1
   end
 
   def part1 do
-    real_input1
+    real_input1()
     |> parse_input1
     |> solve1
   end
 
 
   def sample2 do
-    sample_input2
+    sample_input2()
     |> parse_input2
     |> solve2
   end
 
   def part2 do
-    real_input2
+    real_input2()
     |> parse_input2
     |> solve2
   end
@@ -55,26 +55,55 @@ defmodule Day1 do
 
   def solve(input) do
     input
-    |> Enum.map(&get_mass/1)
+    |> Enum.map(&calculate_fuel/1)
     |> Enum.sum
   end
 
   def solve2(input) do
     input
-    |> Enum.map(fn x -> get_mass_2(x, 0) end)
+    |> Enum.map(&calculate_additional_fuel/1)
     |> Enum.sum
   end
 
-  def get_mass(val) do
-    :math.floor(val / 3) - 2
+  @doc ~S"""
+  Calculate the fuel required given a mass
+
+  ## Examples
+    iex> Day1.calculate_fuel(12)
+    2
+
+    iex> Day1.calculate_fuel(14)
+    2
+
+    iex> Day1.calculate_fuel(1969)
+    654
+
+    iex> Day1.calculate_fuel(100756)
+    33583
+  """
+  def calculate_fuel(val) do
+    trunc(:math.floor(val / 3) - 2)
   end
 
-  def get_mass_2(val, sum) do
-    new = get_mass(val)
 
-    cond do
-      new <= 0 -> sum
-      true -> get_mass_2(new, new + sum)
+  @doc ~S"""
+  Calculate the fuel required given a mass plus the additional fuel for carrying
+  that fuel
+
+  ## Examples
+    iex> Day1.calculate_additional_fuel(12)
+    2
+
+    iex> Day1.calculate_additional_fuel(1969)
+    966
+
+    iex> Day1.calculate_additional_fuel(100756)
+    50346
+  """
+  def calculate_additional_fuel(val, sum \\ 0) do
+    case calculate_fuel(val) do
+      x when x <= 0 -> sum
+      x -> calculate_additional_fuel(x, x + sum)
     end
   end
 

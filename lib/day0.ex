@@ -14,26 +14,26 @@ defmodule Day0 do
   end
 
   def sample do
-    sample_input
+    sample_input()
     |> parse_input1
     |> solve1
   end
 
   def part1 do
-    real_input1
+    real_input1()
     |> parse_input1
     |> solve1
   end
 
 
   def sample2 do
-    sample_input2
+    sample_input2()
     |> parse_input2
     |> solve2
   end
 
   def part2 do
-    real_input2
+    real_input2()
     |> parse_input2
     |> solve2
   end

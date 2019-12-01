@@ -14,6 +14,13 @@
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/libgraph" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/matrex" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/memoize" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/comb" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/elixir_make" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/flow" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/gen_stage" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/libgraph" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/matrex" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/memoize" />
       <excludeFolder url="file://$MODULE_DIR$/assets/node_modules/phoenix" />
       <excludeFolder url="file://$MODULE_DIR$/assets/node_modules/phoenix_html" />
       <excludeFolder url="file://$MODULE_DIR$/cover" />
