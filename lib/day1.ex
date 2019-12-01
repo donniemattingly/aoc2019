@@ -1,25 +1,35 @@
 defmodule Day1 do
+
+  @doc ~S"""
+  Reads the file `inputs/input-1-1.txt`
+  """
   def real_input do
     Utils.get_input(1, 1)
   end
 
-  def sample_input do
+  defp sample_input do
     """
     test
     """
   end
 
-  def sample_input2 do
+  defp sample_input2 do
     """
     """
   end
 
+  @doc """
+  Solves day 1 part 1 for sample input
+  """
   def sample do
     sample_input()
     |> parse_input1
     |> solve1
   end
 
+  @doc"""
+  Solves day 1 part 1
+  """
   def part1 do
     real_input1()
     |> parse_input1
@@ -27,38 +37,55 @@ defmodule Day1 do
   end
 
 
-  def sample2 do
+  defp sample2 do
     sample_input2()
     |> parse_input2
     |> solve2
   end
 
+  @doc """
+  Solves day 1 part 2
+  """
   def part2 do
     real_input2()
     |> parse_input2
     |> solve2
   end
 
-  def real_input1, do: real_input()
-  def real_input2, do: real_input()
+  defp real_input1, do: real_input()
+  defp real_input2, do: real_input()
 
-  def parse_input1(input), do: parse_input(input)
-  def parse_input2(input), do: parse_input(input)
+  defp parse_input1(input), do: parse_input(input)
+  defp parse_input2(input), do: parse_input(input)
 
-  def solve1(input), do: solve(input)
+  defp solve1(input), do: solve(input)
 
+
+  @doc """
+  Splits the input by newlines and converts each line to an integer
+  """
   def parse_input(input) do
     input
     |> String.split("\n")
     |> Enum.map(&String.to_integer/1)
   end
 
+  @doc"""
+  Given a list of ints will calculate the fuel for each and sum the result
+
+  uses `calculate_fuel/1` to calculate fuel
+  """
   def solve(input) do
     input
     |> Enum.map(&calculate_fuel/1)
     |> Enum.sum
   end
 
+  @doc"""
+  Given a list of ints will calculate the fuel + additional fuel for each and sum the result
+
+  uses `calculate_additional_fuel/1` to calculate fuel
+  """
   def solve2(input) do
     input
     |> Enum.map(&calculate_additional_fuel/1)
