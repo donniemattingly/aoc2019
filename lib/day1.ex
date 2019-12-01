@@ -69,17 +69,17 @@ defmodule Day1 do
   Calculate the fuel required given a mass
 
   ## Examples
-    iex> Day1.calculate_fuel(12)
-    2
+      iex> Day1.calculate_fuel(12)
+      2
 
-    iex> Day1.calculate_fuel(14)
-    2
+      iex> Day1.calculate_fuel(14)
+      2
 
-    iex> Day1.calculate_fuel(1969)
-    654
+      iex> Day1.calculate_fuel(1969)
+      654
 
-    iex> Day1.calculate_fuel(100756)
-    33583
+      iex> Day1.calculate_fuel(100756)
+      33583
   """
   def calculate_fuel(val) do
     trunc(:math.floor(val / 3) - 2)
@@ -91,14 +91,14 @@ defmodule Day1 do
   that fuel
 
   ## Examples
-    iex> Day1.calculate_additional_fuel(12)
-    2
+      iex> Day1.calculate_additional_fuel(12)
+      2
 
-    iex> Day1.calculate_additional_fuel(1969)
-    966
+      iex> Day1.calculate_additional_fuel(1969)
+      966
 
-    iex> Day1.calculate_additional_fuel(100756)
-    50346
+      iex> Day1.calculate_additional_fuel(100756)
+      50346
   """
   def calculate_additional_fuel(val, sum \\ 0) do
     case calculate_fuel(val) do
