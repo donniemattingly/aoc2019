@@ -7,6 +7,13 @@
       <sourceFolder url="file://$MODULE_DIR$/lib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/comb" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/elixir_make" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/flow" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/gen_stage" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/libgraph" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/matrex" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/memoize" />
       <excludeFolder url="file://$MODULE_DIR$/assets/node_modules/phoenix" />
       <excludeFolder url="file://$MODULE_DIR$/assets/node_modules/phoenix_html" />
       <excludeFolder url="file://$MODULE_DIR$/cover" />
