@@ -8,7 +8,7 @@
     <meta name="project" content="adventofcode v0.1.0">
     <title>Utils — adventofcode v0.1.0</title>
     <link rel="stylesheet" href="dist/html-de2388dc2f8074b0a4db.css" />
-    <script src="dist/sidebar_items-2fd568e2cd.js"></script>
+    <script src="dist/sidebar_items-d482d7b2e2.js"></script>
       <script src="docs_config.js"></script>
     <script async src="dist/html-de2388dc2f8074b0a4db.js"></script>
   </head>
@@ -69,7 +69,7 @@ Utils      </h1>
 
 
         <section id="moduledoc">
-<p>Documentation for Aoc2016.</p>
+<p>Various Utility functions for solving advent of code problems.</p>
         </section>
 
         <section id="summary" class="details-list">
@@ -88,32 +88,39 @@ Utils      </h1>
   <div class="summary-signature">
     <a href="#get_input/2">get_input(day, part)</a>
   </div>
-    <div class="summary-synopsis"><p>Hello world.</p></div>
+    <div class="summary-synopsis"><p>Reads a file located at <code class="inline">inputs/input-{day}-{part}.txt</code></p></div>
 </div>
 <div class="summary-row">
   <div class="summary-signature">
     <a href="#md5/1">md5(value)</a>
   </div>
+    <div class="summary-synopsis"><p>Generates the md5 hash of a value and encodes it as a lowercase base16 encoded string.</p></div>
 </div>
 <div class="summary-row">
   <div class="summary-signature">
     <a href="#permutations/1">permutations(list)</a>
   </div>
+    <div class="summary-synopsis"><p>Generates all the permutations for the input <code class="inline">list</code></p></div>
 </div>
 <div class="summary-row">
   <div class="summary-signature">
     <a href="#sample/2">sample(value, threshold \\ 0.999)</a>
   </div>
+    <div class="summary-synopsis"><p>Inspects a value, but only if a random value generate is greater than
+<code class="inline">threshold</code></p></div>
 </div>
 <div class="summary-row">
   <div class="summary-signature">
     <a href="#swap/3">swap(list, pos_a, pos_a)</a>
   </div>
+    <div class="summary-synopsis"><p>Swaps the element at <code class="inline">pos_a</code> in <code class="inline">list</code> with the element at <code class="inline">pos_b</code></p></div>
 </div>
 <div class="summary-row">
   <div class="summary-signature">
     <a href="#time/1">time(fun)</a>
   </div>
+    <div class="summary-synopsis"><p>Run the function <code class="inline">fun</code> and returns the time in seconds elapsed
+while running it</p></div>
 </div>
   </div>
         </section>
@@ -135,14 +142,7 @@ Functions          </h1>
     <h1 class="signature">get_input(day, part)</h1>
   </div>
   <section class="docstring">
-<p>Hello world.</p>
-<h2 id="get_input/2-examples" class="section-heading">
-  <a href="#get_input/2-examples" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
-  Examples
-</h2>
-
-<pre><code class="nohighlight makeup elixir"><span class="gp unselectable">iex&gt; </span><span class="nc">Aoc2016</span><span class="o">.</span><span class="n">hello</span><span class="p" data-group-id="4918396066-1">(</span><span class="p" data-group-id="4918396066-1">)</span><span class="w">
-</span><span class="ss">:world</span></code></pre>
+<p>Reads a file located at <code class="inline">inputs/input-{day}-{part}.txt</code></p>
   </section>
 </section>
 <section class="detail" id="md5/1">
@@ -154,6 +154,14 @@ Functions          </h1>
     <h1 class="signature">md5(value)</h1>
   </div>
   <section class="docstring">
+<p>Generates the md5 hash of a value and encodes it as a lowercase base16 encoded string.</p>
+<h2 id="md5/1-examples" class="section-heading">
+  <a href="#md5/1-examples" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Examples
+</h2>
+
+<pre><code class="nohighlight makeup elixir"><span class="gp unselectable">iex&gt; </span><span class="nc">Utils</span><span class="o">.</span><span class="n">md5</span><span class="p" data-group-id="3952644626-1">(</span><span class="s">&quot;advent of code&quot;</span><span class="p" data-group-id="3952644626-1">)</span><span class="w">
+</span><span class="s">&quot;498fa12185ebe8a9231b9072da43c988&quot;</span></code></pre>
   </section>
 </section>
 <section class="detail" id="permutations/1">
@@ -165,6 +173,14 @@ Functions          </h1>
     <h1 class="signature">permutations(list)</h1>
   </div>
   <section class="docstring">
+<p>Generates all the permutations for the input <code class="inline">list</code></p>
+<h2 id="permutations/1-examples" class="section-heading">
+  <a href="#permutations/1-examples" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Examples
+</h2>
+
+<pre><code class="nohighlight makeup elixir"><span class="gp unselectable">iex&gt; </span><span class="nc">Utils</span><span class="o">.</span><span class="n">permutations</span><span class="p" data-group-id="6649272337-1">(</span><span class="p" data-group-id="6649272337-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="6649272337-2">]</span><span class="p" data-group-id="6649272337-1">)</span><span class="w">
+</span><span class="p" data-group-id="6649272337-3">[</span><span class="p" data-group-id="6649272337-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="6649272337-4">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6649272337-5">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6649272337-5">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6649272337-6">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="6649272337-6">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6649272337-7">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="6649272337-7">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6649272337-8">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6649272337-8">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6649272337-9">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="6649272337-9">]</span><span class="p" data-group-id="6649272337-3">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="sample/2">
@@ -177,6 +193,10 @@ Functions          </h1>
     <h1 class="signature">sample(value, threshold \\ 0.999)</h1>
   </div>
   <section class="docstring">
+<p>Inspects a value, but only if a random value generate is greater than
+<code class="inline">threshold</code></p>
+<p>This is intended to be used with large streams of data that you
+want to investigate without printing every value.</p>
   </section>
 </section>
 <section class="detail" id="swap/3">
@@ -188,6 +208,14 @@ Functions          </h1>
     <h1 class="signature">swap(list, pos_a, pos_a)</h1>
   </div>
   <section class="docstring">
+<p>Swaps the element at <code class="inline">pos_a</code> in <code class="inline">list</code> with the element at <code class="inline">pos_b</code></p>
+<h2 id="swap/3-examples" class="section-heading">
+  <a href="#swap/3-examples" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Examples
+</h2>
+
+<pre><code class="nohighlight makeup elixir"><span class="gp unselectable">iex&gt; </span><span class="nc">Utils</span><span class="o">.</span><span class="n">swap</span><span class="p" data-group-id="9965619519-1">(</span><span class="p" data-group-id="9965619519-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="9965619519-2">]</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="9965619519-1">)</span><span class="w">
+</span><span class="p" data-group-id="9965619519-3">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="9965619519-3">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="time/1">
@@ -199,6 +227,8 @@ Functions          </h1>
     <h1 class="signature">time(fun)</h1>
   </div>
   <section class="docstring">
+<p>Run the function <code class="inline">fun</code> and returns the time in seconds elapsed
+while running it</p>
   </section>
 </section>
           </div>

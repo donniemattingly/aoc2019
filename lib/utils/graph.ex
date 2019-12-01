@@ -1,22 +1,25 @@
-defmodule GraphUtils do
+defmodule Utils.Graph do
 
 
   @doc"""
+  Performs a breadth first search starting at `node` The neighbors for `node` are determined
+  by `neighbors_fn`
+
   From wikipedia, a BFS is:
 
-  1  procedure BFS(G,start_v):
-  2      let Q be a queue
-  3      label start_v as discovered
-  4      Q.enqueue(start_v)
-  5      while Q is not empty
-  6          v = Q.dequeue()
-  7          if v is the goal:
-  8              return v
-  9          for all edges from v to w in G.adjacentEdges(v) do
-  10             if w is not labeled as discovered:
-  11                 label w as discovered
-  12                 w.parent = v
-  13                 Q.enqueue(w)
+      1  procedure BFS(G,start_v):
+      2      let Q be a queue
+      3      label start_v as discovered
+      4      Q.enqueue(start_v)
+      5      while Q is not empty
+      6          v = Q.dequeue()
+      7          if v is the goal:
+      8              return v
+      9          for all edges from v to w in G.adjacentEdges(v) do
+      10             if w is not labeled as discovered:
+      11                 label w as discovered
+      12                 w.parent = v
+      13                 Q.enqueue(w)
 
   but the challenge is to accomplish this w/ recursion
 
@@ -54,6 +57,10 @@ defmodule GraphUtils do
     end
   end
 
+  @doc"""
+  Given a `map` of nodes to parents (as a result of performing `Utils.Graph.bfs/2`) returns the path
+  from goal to the start (or a node with no parent).
+  """
   def get_path(map, goal) do
     get_path(map, goal, [])
   end

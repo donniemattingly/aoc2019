@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.21.2">
     <meta name="project" content="adventofcode v0.1.0">
-    <title>MatrixUtils — adventofcode v0.1.0</title>
+    <title>Utils.Matrix — adventofcode v0.1.0</title>
     <link rel="stylesheet" href="dist/html-de2388dc2f8074b0a4db.css" />
-    <script src="dist/sidebar_items-2fd568e2cd.js"></script>
+    <script src="dist/sidebar_items-d482d7b2e2.js"></script>
       <script src="docs_config.js"></script>
     <script async src="dist/html-de2388dc2f8074b0a4db.js"></script>
   </head>
@@ -65,9 +65,12 @@ adventofcode      </a>
 
       <h1>
         <small class="app-vsn">adventofcode v0.1.0</small>
-MatrixUtils      </h1>
+Utils.Matrix      </h1>
 
 
+        <section id="moduledoc">
+<p>A few functions on top of the <a href="https://github.com/versilov/matrex">Matrex</a> library for manipulating matrices.</p>
+        </section>
 
         <section id="summary" class="details-list">
           <h1 class="section-heading">
@@ -85,18 +88,20 @@ MatrixUtils      </h1>
   <div class="summary-signature">
     <a href="#apply_to_sub_rect/6">apply_to_sub_rect(matrix, x, y, w, h, fun)</a>
   </div>
+    <div class="summary-synopsis"><p>Given a <code class="inline">matrix</code> will apply the function <code class="inline">fun</code> to every element in the
+sub-matrix starting at <code class="inline">[x, y]</code> with width <code class="inline">w</code> and height <code class="inline">h</code></p></div>
 </div>
 <div class="summary-row">
   <div class="summary-signature">
     <a href="#shift_col/3">shift_col(matrix, x, amount)</a>
   </div>
-    <div class="summary-synopsis"><p>Shifts a given column by a certain amount</p></div>
+    <div class="summary-synopsis"><p>Shifts the column <code class="inline">x</code> by <code class="inline">amount</code></p></div>
 </div>
 <div class="summary-row">
   <div class="summary-signature">
     <a href="#shift_row/3">shift_row(matrix, y, amount)</a>
   </div>
-    <div class="summary-synopsis"><p>Shifts a given row by a certain amount</p></div>
+    <div class="summary-synopsis"><p>Shifts the row <code class="inline">y</code> by <code class="inline">amount</code></p></div>
 </div>
   </div>
         </section>
@@ -118,6 +123,8 @@ Functions          </h1>
     <h1 class="signature">apply_to_sub_rect(matrix, x, y, w, h, fun)</h1>
   </div>
   <section class="docstring">
+<p>Given a <code class="inline">matrix</code> will apply the function <code class="inline">fun</code> to every element in the
+sub-matrix starting at <code class="inline">[x, y]</code> with width <code class="inline">w</code> and height <code class="inline">h</code></p>
   </section>
 </section>
 <section class="detail" id="shift_col/3">
@@ -129,7 +136,7 @@ Functions          </h1>
     <h1 class="signature">shift_col(matrix, x, amount)</h1>
   </div>
   <section class="docstring">
-<p>Shifts a given column by a certain amount</p>
+<p>Shifts the column <code class="inline">x</code> by <code class="inline">amount</code></p>
   </section>
 </section>
 <section class="detail" id="shift_row/3">
@@ -141,8 +148,8 @@ Functions          </h1>
     <h1 class="signature">shift_row(matrix, y, amount)</h1>
   </div>
   <section class="docstring">
-<p>Shifts a given row by a certain amount</p>
-<p>Here we just transpose then shift col then transpose</p>
+<p>Shifts the row <code class="inline">y</code> by <code class="inline">amount</code></p>
+<p>Here we just transpose then <a href="#shift_col/3"><code class="inline">shift_col/3</code></a> then transpose again</p>
   </section>
 </section>
           </div>
