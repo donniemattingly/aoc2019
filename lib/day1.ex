@@ -1,35 +1,31 @@
 defmodule Day1 do
 
-  @doc ~S"""
-  Reads the file `inputs/input-1-1.txt`
-  """
+  @doc false
   def real_input do
     Utils.get_input(1, 1)
   end
 
-  defp sample_input do
+  @doc false
+  def sample_input do
     """
     test
     """
   end
 
-  defp sample_input2 do
+  @doc false
+  def sample_input2 do
     """
     """
   end
 
-  @doc """
-  Solves day 1 part 1 for sample input
-  """
+  @doc false
   def sample do
     sample_input()
     |> parse_input1
     |> solve1
   end
 
-  @doc"""
-  Solves day 1 part 1
-  """
+  @doc false
   def part1 do
     real_input1()
     |> parse_input1
@@ -37,33 +33,35 @@ defmodule Day1 do
   end
 
 
-  defp sample2 do
+  @doc false
+  def sample2 do
     sample_input2()
     |> parse_input2
     |> solve2
   end
 
-  @doc """
-  Solves day 1 part 2
-  """
+  @doc false
   def part2 do
     real_input2()
     |> parse_input2
     |> solve2
   end
 
-  defp real_input1, do: real_input()
-  defp real_input2, do: real_input()
+  @doc false
+  def real_input1, do: real_input()
+  @doc false
+  def real_input2, do: real_input()
 
-  defp parse_input1(input), do: parse_input(input)
-  defp parse_input2(input), do: parse_input(input)
+  @doc false
+  def parse_input1(input), do: parse_input(input)
+  @doc false
+  def parse_input2(input), do: parse_input(input)
 
-  defp solve1(input), do: solve(input)
+  @doc false
+  def solve1(input), do: solve(input)
 
 
-  @doc """
-  Splits the input by newlines and converts each line to an integer
-  """
+  @doc false
   def parse_input(input) do
     input
     |> String.split("\n")
