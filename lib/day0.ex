@@ -1,4 +1,6 @@
 defmodule Day0 do
+  @moduledoc false
+
   def real_input do
     Utils.get_input(0, 1)
   end

@@ -3,7 +3,7 @@ defmodule Utils.List do
   A few functions for manipulating lists
   """
 
-  @doc"""
+  @doc ~S"""
   Rotates the list `l` by `n` elements left
 
   ## Examples
@@ -17,7 +17,7 @@ defmodule Utils.List do
   def left_rotate(l, n) when n > 0, do: left_rotate(left_rotate(l, 1), n-1)
   def left_rotate(l, n), do: right_rotate(l, -n)
 
-  @doc"""
+  @doc ~S"""
   Rotates the list `l` by `n` elements left
 
   ## Examples

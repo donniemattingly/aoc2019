@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.21.2">
     <meta name="project" content="adventofcode v0.1.0">
-    <title>BitUtils — adventofcode v0.1.0</title>
+    <title>Utils.Bitwise — adventofcode v0.1.0</title>
     <link rel="stylesheet" href="dist/html-de2388dc2f8074b0a4db.css" />
-    <script src="dist/sidebar_items-d482d7b2e2.js"></script>
+    <script src="dist/sidebar_items-575f7f6ecb.js"></script>
       <script src="docs_config.js"></script>
     <script async src="dist/html-de2388dc2f8074b0a4db.js"></script>
   </head>
@@ -65,9 +65,12 @@ adventofcode      </a>
 
       <h1>
         <small class="app-vsn">adventofcode v0.1.0</small>
-BitUtils      </h1>
+Utils.Bitwise      </h1>
 
 
+        <section id="moduledoc">
+<p>Functions for manipulating bitstrings</p>
+        </section>
 
         <section id="summary" class="details-list">
           <h1 class="section-heading">
@@ -85,6 +88,7 @@ BitUtils      </h1>
   <div class="summary-signature">
     <a href="#chunks/2">chunks(binary, n)</a>
   </div>
+    <div class="summary-synopsis"><p>Breaks a <code class="inline">binary</code> in to <code class="inline">n</code>-length chunks of bits</p></div>
 </div>
   </div>
         </section>
@@ -106,6 +110,14 @@ Functions          </h1>
     <h1 class="signature">chunks(binary, n)</h1>
   </div>
   <section class="docstring">
+<p>Breaks a <code class="inline">binary</code> in to <code class="inline">n</code>-length chunks of bits</p>
+<h2 id="chunks/2-examples" class="section-heading">
+  <a href="#chunks/2-examples" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Examples
+</h2>
+
+<pre><code class="nohighlight makeup elixir"><span class="gp unselectable">iex&gt; </span><span class="nc">Utils.Bitwise</span><span class="o">.</span><span class="n">chunks</span><span class="p" data-group-id="1540711547-1">(</span><span class="s">&quot;abcd&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p" data-group-id="1540711547-1">)</span><span class="w">
+</span><span class="p" data-group-id="1540711547-2">[</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;d&quot;</span><span class="p" data-group-id="1540711547-2">]</span></code></pre>
   </section>
 </section>
           </div>
