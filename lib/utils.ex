@@ -3,12 +3,44 @@ defmodule Utils do
   Various Utility functions for solving advent of code problems.
   """
 
-  @doc """
+  @doc ~S"""
   Reads a file located at `inputs/input-{day}-{part}.txt`
+
+
+  ## Options
+
+  - `:stream`
+    if true will use `File.stream!/1` defaults to  `File.read!/1`
+
+  - `:split`
+    if true will split the input line by line
+
+
+  ## Examples
+
+      iex> Utils.get_input(0, 0)
+      "Test File\nWith Lines"
+
+      iex> Utils.get_input(0, 0, split: true)
+      ["Test File", "With Lines"]
+
+      iex> Utils.get_input(0, 0, stream: true) |> Stream.run
+      :ok
   """
-  def get_input(day, part) do
+  def get_input(day, part, options \\ []) do
+    read = case Keyword.get(options, :stream, false) do
+      true -> &File.stream!/1
+      false -> &File.read!/1
+    end
+
+    map = case Keyword.get(options, :split, false) do
+      true -> fn x -> String.split(x,"\n", trim: true) end
+      false -> fn x -> x end
+    end
+
     "inputs/input-#{day}-#{part}.txt"
-    |> File.read!
+    |> read.()
+    |> map.()
   end
 
 
