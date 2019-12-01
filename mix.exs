@@ -21,6 +21,8 @@ defmodule Adventofcode.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:earmark, "~> 1.2", only: :dev},
+      {:ex_doc, "~> 0.19", only: :dev},
       {:matrex, "~> 0.6"},
       {:libgraph, "~> 0.13"},
       {:flow, "~> 0.14"},
