@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.21.2">
     <meta name="project" content="adventofcode v0.1.0">
-    <title>Adventofcode — adventofcode v0.1.0</title>
+    <title>Utils — adventofcode v0.1.0</title>
     <link rel="stylesheet" href="dist/html-de2388dc2f8074b0a4db.css" />
     <script src="dist/sidebar_items-fe6d893c5c.js"></script>
       <script src="docs_config.js"></script>
@@ -65,11 +65,11 @@ adventofcode      </a>
 
       <h1>
         <small class="app-vsn">adventofcode v0.1.0</small>
-Adventofcode      </h1>
+Utils      </h1>
 
 
         <section id="moduledoc">
-<p>Documentation for Adventofcode.</p>
+<p>Documentation for Aoc2016.</p>
         </section>
 
         <section id="summary" class="details-list">
@@ -86,9 +86,34 @@ Adventofcode      </h1>
     </h2>
 <div class="summary-row">
   <div class="summary-signature">
-    <a href="#hello/0">hello()</a>
+    <a href="#get_input/2">get_input(day, part)</a>
   </div>
     <div class="summary-synopsis"><p>Hello world.</p></div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#md5/1">md5(value)</a>
+  </div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#permutations/1">permutations(list)</a>
+  </div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#sample/2">sample(value, threshold \\ 0.999)</a>
+  </div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#swap/3">swap(list, pos_a, pos_a)</a>
+  </div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#time/1">time(fun)</a>
+  </div>
 </div>
   </div>
         </section>
@@ -101,23 +126,79 @@ Adventofcode      </h1>
             </a>
 Functions          </h1>
           <div class="functions-list">
-<section class="detail" id="hello/0">
+<section class="detail" id="get_input/2">
   <div class="detail-header">
-    <a href="#hello/0" class="detail-link" title="Link to this function">
+    <a href="#get_input/2" class="detail-link" title="Link to this function">
       <span class="icon-link" aria-hidden="true"></span>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature">hello()</h1>
+    <h1 class="signature">get_input(day, part)</h1>
   </div>
   <section class="docstring">
 <p>Hello world.</p>
-<h2 id="hello/0-examples" class="section-heading">
-  <a href="#hello/0-examples" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+<h2 id="get_input/2-examples" class="section-heading">
+  <a href="#get_input/2-examples" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
   Examples
 </h2>
 
-<pre><code class="nohighlight makeup elixir"><span class="gp unselectable">iex&gt; </span><span class="nc">Adventofcode</span><span class="o">.</span><span class="n">hello</span><span class="p" data-group-id="9851832313-1">(</span><span class="p" data-group-id="9851832313-1">)</span><span class="w">
+<pre><code class="nohighlight makeup elixir"><span class="gp unselectable">iex&gt; </span><span class="nc">Aoc2016</span><span class="o">.</span><span class="n">hello</span><span class="p" data-group-id="3463757235-1">(</span><span class="p" data-group-id="3463757235-1">)</span><span class="w">
 </span><span class="ss">:world</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="md5/1">
+  <div class="detail-header">
+    <a href="#md5/1" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">md5(value)</h1>
+  </div>
+  <section class="docstring">
+  </section>
+</section>
+<section class="detail" id="permutations/1">
+  <div class="detail-header">
+    <a href="#permutations/1" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">permutations(list)</h1>
+  </div>
+  <section class="docstring">
+  </section>
+</section>
+<section class="detail" id="sample/2">
+    <span id="sample/1"></span>
+  <div class="detail-header">
+    <a href="#sample/2" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">sample(value, threshold \\ 0.999)</h1>
+  </div>
+  <section class="docstring">
+  </section>
+</section>
+<section class="detail" id="swap/3">
+  <div class="detail-header">
+    <a href="#swap/3" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">swap(list, pos_a, pos_a)</h1>
+  </div>
+  <section class="docstring">
+  </section>
+</section>
+<section class="detail" id="time/1">
+  <div class="detail-header">
+    <a href="#time/1" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">time(fun)</h1>
+  </div>
+  <section class="docstring">
   </section>
 </section>
           </div>
