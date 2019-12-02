@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.21.2">
+    <meta name="project" content="adventofcode v0.1.0">
+    <title>Intcode — adventofcode v0.1.0</title>
+    <link rel="stylesheet" href="dist/html-de2388dc2f8074b0a4db.css" />
+    <script src="dist/sidebar_items-6485718d94.js"></script>
+      <script src="docs_config.js"></script>
+    <script async src="dist/html-de2388dc2f8074b0a4db.js"></script>
+  </head>
+  <body data-type="modules">
+    <script>try { if(localStorage.getItem('night-mode') === 'true') document.body.className += ' night-mode'; } catch (e) { }</script>
+<div class="main">
+
+<button class="sidebar-button sidebar-toggle">
+  <span class="icon-menu" title="Collapse/expand sidebar"></span>
+</button>
+
+<section class="sidebar">
+  <form class="sidebar-search" action="search.html">
+    <button type="submit" class="search-button">
+      <span class="icon-search" aria-hidden="true"></span>
+    </button>
+    <button type="button" tabindex="-1" class="search-close-button">
+      <span class="icon-cross" title="Cancel search"></span>
+    </button>
+    <label class="search-label">
+      <input name="q" type="text" id="search-list" class="search-input" placeholder="Search..." aria-label="Search" autocomplete="off" />
+    </label>
+  </form>
+
+  <div class="autocomplete">
+    <div class="autocomplete-results">
+    </div>
+  </div>
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectDetails">
+      <a href="api-reference.html" class="sidebar-projectName">
+adventofcode      </a>
+      <h2 class="sidebar-projectVersion">
+        v0.1.0
+      </h2>
+    </div>
+  </div>
+
+  <ul class="sidebar-listNav">
+    <li><a id="extras-list" href="#full-list">Pages</a></li>
+
+      <li><a id="modules-list" href="#full-list">Modules</a></li>
+
+
+  </ul>
+  <div class="gradient"></div>
+  <ul id="full-list" class="sidebar-fullList"></ul>
+</section>
+
+<section class="content">
+  <div class="content-outer">
+    <div id="content" class="content-inner">
+
+      <h1>
+        <small class="app-vsn">adventofcode v0.1.0</small>
+Intcode      </h1>
+
+
+        <section id="moduledoc">
+<p>Intcode seems to be important this year for Advent of Code, so I&#39;m preemptively moving out
+some helper functions here.</p>
+        </section>
+
+        <section id="summary" class="details-list">
+          <h1 class="section-heading">
+            <a class="hover-link" href="#summary">
+              <span class="icon-link" aria-hidden="true"></span>
+              <span class="sr-only">Link to this section</span>
+            </a>
+            Summary
+          </h1>
+  <div class="summary-functions summary">
+    <h2>
+      <a href="#functions">Functions</a>
+    </h2>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#execute/1">execute(arg)</a>
+  </div>
+    <div class="summary-synopsis"><p>Executes the instruction defined by the opcode at <code class="inline">ip</code></p></div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#execute/2">execute(memory, atom)</a>
+  </div>
+    <div class="summary-synopsis"><p>Executes the given intcode program in <code class="inline">memory</code> (a list of integers) and returns the memory after the program halts.</p></div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#execute_instruction/3">execute_instruction(memory, params, atom)</a>
+  </div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#execute_instruction/4">execute_instruction(memory, list, atom, fun)</a>
+  </div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#get_addr/2">get_addr(memory, address)</a>
+  </div>
+    <div class="summary-synopsis"><p>Gets the value at <code class="inline">address</code> in memory</p></div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#get_parameters_for_instruction/3">get_parameters_for_instruction(memory, ip, instruction)</a>
+  </div>
+    <div class="summary-synopsis"><p>Returns a list of all the parameters for the <code class="inline">instruction</code> as given by the <code class="inline">ip</code> (instruction pointer) and
+the number of parameters <code class="inline">count</code> from the <code class="inline">memory</code></p></div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#parse_instruction/2">parse_instruction(memory, ip)</a>
+  </div>
+    <div class="summary-synopsis"><p>Parses the instruction beginning at <code class="inline">ip</code></p></div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#update_instruction_pointer/2">update_instruction_pointer(ip, instruction)</a>
+  </div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#update_memory/2">update_memory(initial_memory, updates)</a>
+  </div>
+    <div class="summary-synopsis"><p>Given the <code class="inline">initial_memory</code> applies the <code class="inline">updates</code>, which are {index, new_value} pairs</p></div>
+</div>
+  </div>
+        </section>
+
+        <section id="functions" class="details-list">
+          <h1 class="section-heading">
+            <a class="hover-link" href="#functions">
+              <span class="icon-link" aria-hidden="true"></span>
+              <span class="sr-only">Link to this section</span>
+            </a>
+Functions          </h1>
+          <div class="functions-list">
+<section class="detail" id="execute/1">
+  <div class="detail-header">
+    <a href="#execute/1" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">execute(arg)</h1>
+  </div>
+  <section class="docstring">
+<p>Executes the instruction defined by the opcode at <code class="inline">ip</code></p>
+<p>Returns a tuple of the new memory and the new instruction pointer. The new instruction pointer is found by
+incrementing the current instruction pointer by 1 + the number of parameters of this instruction. The instruction
+pointer can also be set by an instruction, and if it&#39;s value is <code class="inline">:halt</code> the program halts.</p>
+  </section>
+</section>
+<section class="detail" id="execute/2">
+  <div class="detail-header">
+    <a href="#execute/2" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">execute(memory, atom)</h1>
+  </div>
+  <section class="docstring">
+<p>Executes the given intcode program in <code class="inline">memory</code> (a list of integers) and returns the memory after the program halts.</p>
+<p>This sets the instruction pointer to 0 initially.</p>
+  </section>
+</section>
+<section class="detail" id="execute_instruction/3">
+  <div class="detail-header">
+    <a href="#execute_instruction/3" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">execute_instruction(memory, params, atom)</h1>
+  </div>
+  <section class="docstring">
+  </section>
+</section>
+<section class="detail" id="execute_instruction/4">
+  <div class="detail-header">
+    <a href="#execute_instruction/4" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">execute_instruction(memory, list, atom, fun)</h1>
+  </div>
+  <section class="docstring">
+  </section>
+</section>
+<section class="detail" id="get_addr/2">
+  <div class="detail-header">
+    <a href="#get_addr/2" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">get_addr(memory, address)</h1>
+  </div>
+  <section class="docstring">
+<p>Gets the value at <code class="inline">address</code> in memory</p>
+  </section>
+</section>
+<section class="detail" id="get_parameters_for_instruction/3">
+  <div class="detail-header">
+    <a href="#get_parameters_for_instruction/3" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">get_parameters_for_instruction(memory, ip, instruction)</h1>
+  </div>
+  <section class="docstring">
+<p>Returns a list of all the parameters for the <code class="inline">instruction</code> as given by the <code class="inline">ip</code> (instruction pointer) and
+the number of parameters <code class="inline">count</code> from the <code class="inline">memory</code></p>
+  </section>
+</section>
+<section class="detail" id="parse_instruction/2">
+  <div class="detail-header">
+    <a href="#parse_instruction/2" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">parse_instruction(memory, ip)</h1>
+  </div>
+  <section class="docstring">
+<p>Parses the instruction beginning at <code class="inline">ip</code></p>
+<p>Returns a tuple of the instruction and it&#39;s parameters</p>
+  </section>
+</section>
+<section class="detail" id="update_instruction_pointer/2">
+  <div class="detail-header">
+    <a href="#update_instruction_pointer/2" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">update_instruction_pointer(ip, instruction)</h1>
+  </div>
+  <section class="docstring">
+  </section>
+</section>
+<section class="detail" id="update_memory/2">
+  <div class="detail-header">
+    <a href="#update_memory/2" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">update_memory(initial_memory, updates)</h1>
+  </div>
+  <section class="docstring">
+<p>Given the <code class="inline">initial_memory</code> applies the <code class="inline">updates</code>, which are {index, new_value} pairs</p>
+  </section>
+</section>
+          </div>
+        </section>
+      <footer class="footer">
+        <p>
+          <span class="line">
+            Built using
+            <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener">ExDoc</a> (v0.21.2),
+          </span>
+          <span class="line">
+            designed by
+            <a href="https://twitter.com/dignifiedquire" target="_blank" rel="noopener" title="@dignifiedquire">Friedel Ziegelmayer</a>.
+          </span>
+        </p>
+        <p>
+          <button class="line footer-button night-mode-toggle">
+            Toggle night mode
+          </button>
+          <button class="line footer-button tooltips-toggle">
+            <span class="tooltips-option-disable">Disable tooltips</span>
+            <span class="tooltips-option-enable">Enable tooltips</span>
+          </button>
+          <button class="line footer-button display-shortcuts-help">
+            Display keyboard shortcuts
+          </button>
+          <button class="line footer-button display-quick-switch">
+            Go to a HexDocs package
+          </button>
+        </p>
+      </footer>
+    </div>
+  </div>
+</section>
+</div>
+  </body>
+</html>

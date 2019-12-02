@@ -1,6 +1,8 @@
 defmodule Day2 do
   @moduledoc false
 
+  import Intcode
+
   def real_input do
     Utils.get_input(2, 1)
   end
@@ -56,6 +58,11 @@ defmodule Day2 do
   def solve(input) do
     new_input = transform_input(input, 12, 2)
     op({new_input, 0})
+  end
+
+  def solve_better(input) do
+    [h | t] = Intcode.execute(input, :start)
+    h
   end
 
   def solve2(input) do
