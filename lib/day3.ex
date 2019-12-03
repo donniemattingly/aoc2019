@@ -1,6 +1,10 @@
 defmodule Day3 do
   @moduledoc false
 
+  defmodule Point do
+    defstruct [x: 0, y: 0, da: 0, db: 0,]
+  end
+
   def real_input do
     Utils.get_input(3, 1)
   end
@@ -9,6 +13,11 @@ defmodule Day3 do
     """
     R8,U5,L5,D3
     U7,R6,D4,L4
+    """
+
+    """
+    R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51
+    U98,R91,D20,R16,D67,R40,U7,R15,U6,R7
     """
   end
 
@@ -96,12 +105,19 @@ defmodule Day3 do
     |> Enum.sort_by(&elem(&1, 1))
   end
 
+  def print(input) do
+    input
+    |> Enum.map(&moves_to_segments/1)
+    |> generate_grid
+    |> render_grid
+  end
+
   def solve(input) do
     input
     |> Enum.map(&moves_to_segments/1)
     |> generate_grid
     |> get_intersections_from_grid
-    |> Enum.min_by(fn {a, _} -> manhattan_dist(a) end)
+    |> Enum.min_by(fn { _, { _, a}} -> a end)
   end
 
   def get_intersections_from_grid(grid) do
@@ -126,10 +142,10 @@ defmodule Day3 do
     {new_pos, [{pos, new_pos} | segments]}
   end
 
-  def move_wire({x1, y1, d}, {:u, amt}), do: {x1, y1 + amt, d+amt}
-  def move_wire({x1, y1, d}, {:r, amt}), do: {x1 + amt, y1, d+amt}
-  def move_wire({x1, y1, d}, {:d, amt}), do: {x1, y1 - amt, d+amt}
-  def move_wire({x1, y1, d}, {:l, amt}), do: {x1 - amt, y1, d+amt}
+  def move_wire({x1, y1, d}, {:u, amt}), do: {x1, y1 + amt, d + amt}
+  def move_wire({x1, y1, d}, {:r, amt}), do: {x1 + amt, y1, d + amt}
+  def move_wire({x1, y1, d}, {:d, amt}), do: {x1, y1 - amt, d + amt}
+  def move_wire({x1, y1, d}, {:l, amt}), do: {x1 - amt, y1, d + amt}
 
   @doc"""
   Finds the point where two line segments intersect
@@ -171,6 +187,27 @@ defmodule Day3 do
     end
   end
 
+  def render_grid(grid) do
+    keys = Map.keys(grid)
+    {max_x, _} = Enum.max_by(keys, &elem(&1, 0))
+    {_, max_y} = Enum.max_by(keys, &elem(&1, 1))
+
+    -1..max_y+1
+    |> Enum.map(
+         fn y ->
+           -1..max_x+1
+           |> Enum.map(
+                fn x ->
+                  Map.get(grid, {x, y}, {".", nil})
+                  |> elem(0)
+                end
+              )
+           |> Enum.join("")
+         end
+       )
+    |> Enum.join("\n")
+    |> IO.puts
+  end
 
   def generate_grid(segments) do
     [a, b] = segments
@@ -187,23 +224,29 @@ defmodule Day3 do
   def add_segment_to_grid({:y, x, y1, y2, d}, {grid, wire}) do
     y1..y2
     |> Enum.map(fn y -> {x, y} end)
-    |> Enum.map(fn {x, y} -> if y == y1 or y == y2, do: {{x, y}, :t, d + abs(y - y1)}, else: {{x, y}, :y, d + abs(y - y1)} end)
+    |> Enum.map(
+         fn {x, y} -> if y == y1 or y == y2, do: {{x, y}, :t, d + abs(y - y1)}, else: {{x, y}, :y, d + abs(y - y1)} end
+       )
     |> Enum.reduce({grid, wire}, &update_grid/2)
   end
 
   def add_segment_to_grid({:x, y, x1, x2, d}, {grid, wire}) do
     x1..x2
     |> Enum.map(fn x -> {x, y} end)
-    |> Enum.map(fn {x, y} -> if x == x1 or x == x2, do: {{x, y}, :t, d + abs(x - x1)}, else: {{x, y}, :x, d + abs(x - x1)} end)
+    |> Enum.map(
+         fn {x, y} -> if x == x1 or x == x2, do: {{x, y}, :t, d + abs(x - x1)}, else: {{x, y}, :x, d + abs(x - x1)} end
+       )
     |> Enum.reduce({grid, wire}, &update_grid/2)
   end
 
   def update_grid({point, orientation, delay} = i, {grid, wire}) do
     char = case orientation do
-      :x -> "-"
       :y -> "|"
+      :x -> "-"
       :t -> "+"
     end
+
+    char = if point == {0, 0}, do: "O", else: char
 
     {
       Map.update(
@@ -211,11 +254,11 @@ defmodule Day3 do
         point,
         {char, wire, delay},
         fn {c, w, d} ->
-           if w == wire do
-             {"+", w, d}
-           else
-             {"X", delay + d}
-           end
+          if w == wire do
+            {"+", w, min(d, delay)}
+          else
+            {"X", delay + d}
+          end
         end
       ),
       wire
