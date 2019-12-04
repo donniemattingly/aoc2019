@@ -52,49 +52,41 @@ defmodule Day4 do
     input
   end
 
-  def solve(input) do
+  def common_filter(input) do
     [a, b] = input
     a..b
     |> Enum.map(&to_charlist/1)
-    |> Enum.filter(&is_valid?/1)
+    |> Enum.filter(&never_decrease/1)
+  end
+
+  def solve(input) do
+    common_filter(input)
+    |> Enum.reject(&no_duplicates?/1)
     |> Enum.count
   end
 
   def solve2(input) do
-    [a, b] = input
-    a..b
-    |> Enum.map(&to_charlist/1)
-    |> Enum.filter(&is_valid2?/1)
+    common_filter(input)
+    |> Enum.filter(&has_pair_of_digits?/1)
     |> Enum.count
   end
 
-  def is_valid?(password) do
-    adjacent_digits_same?(password) and never_decrease(password)
+  def password_to_number_frequencies(password) do
+    Enum.reduce(password, %{}, fn x, acc -> Map.update(acc, x, 1, &(&1 + 1)) end)
   end
 
-  def is_valid2?(password) do
-    has_pair_of_digits?(password) and never_decrease(password)
+  def no_duplicates?(password) do
+    password
+    |> password_to_number_frequencies
+    |> Map.values
+    |> Enum.all?(fn x -> x == 1 end)
   end
 
-  def adjacent_digits_same?([h | t]) do
-    {_, res} = Enum.reduce(t, {h, false}, fn x, {last, matches} -> {x, matches || x == last} end)
-    res
-  end
-
-  def has_pair_of_digits?([h | t]) do
-    {_, map} = Enum.reduce(
-      t,
-      {h, Map.put(%{}, h, 1)},
-      fn x, {last, matches} ->
-        if x == last do
-          {x, Map.update(matches, x, 1, & &1 + 1)}
-        else
-          {x, Map.put(matches, x, 1)}
-        end
-      end
-    )
-
-    2 in Map.values(map)
+  def has_pair_of_digits?(password) do
+    password
+    |> password_to_number_frequencies
+    |> Map.values
+    |> Enum.member?(2)
   end
 
   def never_decrease(password) do
