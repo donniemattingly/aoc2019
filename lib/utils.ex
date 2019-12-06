@@ -3,7 +3,7 @@ defmodule Utils do
   Various Utility functions for solving advent of code problems.
   """
 
-  @log false
+  @log true
 
   @doc ~S"""
   Reads a file located at `inputs/input-{day}-{part}.txt`
@@ -114,11 +114,11 @@ defmodule Utils do
   def permutations([]), do: [[]]
   def permutations(list), do: for elem <- list, rest <- permutations(list--[elem]), do: [elem|rest]
 
-  def log_inspect(value, description) when @log do
+  def log_inspect(value, description, opts \\ []) when @log do
     IO.puts(description <> ": ")
-    IO.inspect(value)
+    IO.inspect(value, opts)
   end
 
-  def log_inspect(value, _description), do: value
+  def log_inspect(value), do: value
 
 end

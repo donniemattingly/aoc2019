@@ -4,7 +4,30 @@ defmodule Intcode do
   some helper functions here.
   """
 
-  @input 5
+  defmodule Io do
+    use Agent
+
+    def start_link do
+      Agent.start_link(fn -> [input: nil, output: nil] end, name: __MODULE__)
+    end
+
+    def input do
+      Agent.get(__MODULE__, fn state -> Keyword.get(state, :input) end)
+    end
+
+    def output do
+      Agent.get(__MODULE__, fn state -> Keyword.get(state, :output)  end)
+    end
+
+    def set_input(input) do
+      Agent.update(__MODULE__, fn state -> Keyword.put(state, :input, input) end)
+    end
+
+    def set_output(output) do
+      Agent.update(__MODULE__, fn state -> Keyword.put(state, :output, output) end)
+    end
+  end
+
 
   defmodule Instruction do
     defstruct [opcode: -1, parameters: -1, operation: :no_op, modes: []]
@@ -23,7 +46,7 @@ defmodule Intcode do
 
     defimpl String.Chars, for: Instruction do
       def to_string(instr) do
-        "Instruction: opcode: #{instr.opcode}"
+        "%{op: #{instr.operation}}"
       end
     end
   end
@@ -107,9 +130,9 @@ defmodule Intcode do
   pointer can also be set by an instruction, and if it's value is `:halt` the program halts.
   """
   def execute({memory, ip}) do
+    IO.inspect({memory, ip})
     {instruction, parameters} = parse_instruction(memory, ip)
-    case execute_instruction(memory, parameters, instruction.operation)
-         |> Utils.log_inspect("New memory after execution") do
+    case execute_instruction(memory, parameters, instruction.operation) do
       {:ok, new_memory} -> execute({new_memory, update_instruction_pointer(ip, instruction)})
       {:ok, new_memory, new_ip} -> execute({new_memory, new_ip})
       {:halt, new_memory} -> new_memory
@@ -121,44 +144,40 @@ defmodule Intcode do
     input2 = get_value(memory, b)
     output = Keyword.get(c, :value)
 
-    Utils.log_inspect([a, b, c], "Parameters")
-    Utils.log_inspect([input1, input2, output], "Input and output")
-
     {:ok, List.replace_at(memory, output, fun.(input1, input2))}
   end
 
   def execute_instruction(memory, [a], :input) do
     output = Keyword.get(a, :value)
-    {:ok, List.replace_at(memory, output, @input)}
+    {:ok, List.replace_at(memory, output, Intcode.Io.input())}
   end
 
   def execute_instruction(memory, [a], :output) do
-    output = Keyword.get(a, :value)
-    IO.puts("Output: #{get_addr(memory, output)}")
+    output = get_addr(memory, Keyword.get(a, :value))
+    Intcode.Io.set_output(output)
+    IO.puts("Output: #{output}")
     {:ok, memory}
   end
 
-  def execute_instruction(memory, [a, b, c], :compare, comparator) do
+  def execute_instruction(m, [a, b, c], :compare, comparator) do
+    replacement = if comparator.(get_value(m, a), get_value(m, b)), do: 1, else: 0
     output = Keyword.get(c, :value)
-    replacement = if comparator.(a, b), do: 1, else: 0
-    {:ok, List.replace_at(memory, output, 1)}
+    {:ok, List.replace_at(m, output, replacement)}
   end
 
   def execute_instruction(memory, params, :less_than) do
     execute_instruction(
       memory,
-      params
-      |> Enum.map(&get_value(memory, &1)),
+      params,
       :compare,
-      & &1 == &2
+      & &1 < &2
     )
   end
 
   def execute_instruction(memory, params, :equals) do
     execute_instruction(
       memory,
-      params
-      |> Enum.map(&get_value(memory, &1)),
+      params,
       :compare,
       & &1 == &2
     )
@@ -177,7 +196,7 @@ defmodule Intcode do
       params
       |> Enum.map(&get_value(memory, &1)),
       :jump_if,
-      & &1 == 1
+      & &1 != 0
     )
   end
 
@@ -193,12 +212,10 @@ defmodule Intcode do
 
   def execute_instruction(memory, params, :add) do
     execute_instruction(memory, params, :simple_infix, &(&1 + &2))
-    |> Utils.log_inspect("add result")
   end
 
   def execute_instruction(memory, params, :multiply) do
     execute_instruction(memory, params, :simple_infix, &(&1 * &2))
-    |> Utils.log_inspect("multiply result")
   end
 
   def execute_instruction(memory, [], :halt) do
@@ -216,7 +233,7 @@ defmodule Intcode do
   Gets the value at `address` in memory
   """
   def get_addr(memory, address) do
-    Utils.log_inspect(address, "Address")
+    #    Utils.log_inspect(address, "Address")
     Enum.at(memory, address)
   end
 
@@ -235,7 +252,6 @@ defmodule Intcode do
       |> Map.put(:modes, modes)
     )
 
-    Utils.log_inspect(instruction, "Instruction")
     parameters = get_parameters_for_instruction(memory, ip, instruction)
     zipped_parameters = zip_parameters_with_modes(parameters, modes)
 
@@ -243,7 +259,7 @@ defmodule Intcode do
   end
 
   def get_opcode_and_modes(unparsed_opcode) do
-    case to_charlist(unparsed_opcode) |> Utils.log_inspect("Unparsed opcode")
+    case to_charlist(unparsed_opcode)
          |> Enum.reverse do
       'lin' -> {99, []}
       [a, b | rest] ->
@@ -279,8 +295,8 @@ defmodule Intcode do
   the number of parameters `count` from the `memory`
   """
   def get_parameters_for_instruction(memory, ip, %Instruction{parameters: count} = instruction) do
+    #    IO.inspect({"#{instruction}", Enum.slice(memory, ip..ip + count)}, charlists: :as_list)
     Enum.slice(memory, ip + 1..ip + count)
-    |> Utils.log_inspect("Found Parameters")
   end
 
 end

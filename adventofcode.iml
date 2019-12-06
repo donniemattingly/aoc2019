@@ -21,6 +21,7 @@
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/memoize" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/nimble_parsec" />
       <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/comb" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/combine" />
       <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/elixir_make" />
       <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/flow" />
       <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/gen_stage" />

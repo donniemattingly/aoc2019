@@ -49,14 +49,25 @@ defmodule Day5 do
   def parse_input2(input), do: parse_input(input)
 
   def solve1(input), do: solve(input)
-  def solve2(input), do: solve(input)
 
   def parse_input(input) do
     input |> String.split(",") |> Enum.map(&String.to_integer/1)
   end
 
   def solve(input) do
+    Intcode.Io.start_link()
+    Intcode.Io.set_input(1)
     Intcode.execute(input, :start)
+
+    Intcode.Io.output()
+  end
+
+  def solve2(input) do
+    Intcode.Io.start_link()
+    Intcode.Io.set_input(5)
+    Intcode.execute(input, :start)
+
+    Intcode.Io.output()
   end
 
 end
