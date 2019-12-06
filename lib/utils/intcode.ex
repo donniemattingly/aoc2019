@@ -7,8 +7,8 @@ defmodule Intcode do
   defmodule Io do
     use Agent
 
-    def start_link do
-      Agent.start_link(fn -> [input: nil, output: nil] end, name: __MODULE__)
+    def start_link(opts \\ []) do
+      Agent.start_link(fn -> [input: Keyword.get(opts, :input), output: Keyword.get(opts, :output)] end, name: __MODULE__)
     end
 
     def input do
@@ -130,7 +130,6 @@ defmodule Intcode do
   pointer can also be set by an instruction, and if it's value is `:halt` the program halts.
   """
   def execute({memory, ip}) do
-    IO.inspect({memory, ip})
     {instruction, parameters} = parse_instruction(memory, ip)
     case execute_instruction(memory, parameters, instruction.operation) do
       {:ok, new_memory} -> execute({new_memory, update_instruction_pointer(ip, instruction)})
@@ -155,7 +154,6 @@ defmodule Intcode do
   def execute_instruction(memory, [a], :output) do
     output = get_addr(memory, Keyword.get(a, :value))
     Intcode.Io.set_output(output)
-    IO.puts("Output: #{output}")
     {:ok, memory}
   end
 
@@ -295,7 +293,6 @@ defmodule Intcode do
   the number of parameters `count` from the `memory`
   """
   def get_parameters_for_instruction(memory, ip, %Instruction{parameters: count} = instruction) do
-    #    IO.inspect({"#{instruction}", Enum.slice(memory, ip..ip + count)}, charlists: :as_list)
     Enum.slice(memory, ip + 1..ip + count)
   end
 
