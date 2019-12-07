@@ -1,5 +1,5 @@
 defmodule Utils.Bitwise do
-  @moduledoc"""
+  @moduledoc """
   Functions for manipulating bitstrings
   """
 

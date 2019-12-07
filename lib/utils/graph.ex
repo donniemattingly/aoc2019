@@ -1,7 +1,5 @@
 defmodule Utils.Graph do
-
-
-  @doc"""
+  @doc """
   Performs a breadth first search starting at `node` The neighbors for `node` are determined
   by `neighbors_fn`
 
@@ -39,25 +37,28 @@ defmodule Utils.Graph do
 
   defp do_bfs(neighbors_fn, queue, discovered) do
     case PriorityQueue.pop(queue) do
-      {:empty, _} -> {node, discovered}
+      {:empty, _} ->
+        {node, discovered}
+
       {{:value, v}, new_queue} ->
-        {updated_queue, updated_discovered} = neighbors_fn.(v)
-        |> Enum.reduce({new_queue, discovered}, fn w, {q, d} ->
-          case Map.has_key?(d, w) do
-            true -> {q, d}
-            false -> {PriorityQueue.push(q, w, 1), Map.put(d, w, v)}
-          end
-        end)
+        {updated_queue, updated_discovered} =
+          neighbors_fn.(v)
+          |> Enum.reduce({new_queue, discovered}, fn w, {q, d} ->
+            case Map.has_key?(d, w) do
+              true -> {q, d}
+              false -> {PriorityQueue.push(q, w, 1), Map.put(d, w, v)}
+            end
+          end)
 
         if :rand.uniform() > 0.9999 do
-          updated_discovered |> get_path(v) |> length |> to_string |> IO.puts
+          updated_discovered |> get_path(v) |> length |> to_string |> IO.puts()
         end
 
         do_bfs(neighbors_fn, updated_queue, updated_discovered)
     end
   end
 
-  @doc"""
+  @doc """
   Given a `map` of nodes to parents (as a result of performing `Utils.Graph.bfs/2`) returns the path
   from goal to the start (or a node with no parent).
   """
@@ -68,8 +69,7 @@ defmodule Utils.Graph do
   defp get_path(map, current_node, path) do
     case Map.get(map, current_node) do
       nil -> path
-      x -> get_path(map, x, [ current_node | path ])
+      x -> get_path(map, x, [current_node | path])
     end
   end
-
 end

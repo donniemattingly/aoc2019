@@ -1,5 +1,4 @@
 defmodule Day1 do
-
   @doc false
   def real_input do
     Utils.get_input(1, 1)
@@ -32,7 +31,6 @@ defmodule Day1 do
     |> solve1
   end
 
-
   @doc false
   def sample2 do
     sample_input2()
@@ -60,7 +58,6 @@ defmodule Day1 do
   @doc false
   def solve1(input), do: solve(input)
 
-
   @doc false
   def parse_input(input) do
     input
@@ -68,7 +65,7 @@ defmodule Day1 do
     |> Enum.map(&String.to_integer/1)
   end
 
-  @doc"""
+  @doc """
   Given a list of ints will calculate the fuel for each and sum the result
 
   uses `calculate_fuel/1` to calculate fuel
@@ -76,10 +73,10 @@ defmodule Day1 do
   def solve(input) do
     input
     |> Enum.map(&calculate_fuel/1)
-    |> Enum.sum
+    |> Enum.sum()
   end
 
-  @doc"""
+  @doc """
   Given a list of ints will calculate the fuel + additional fuel for each and sum the result
 
   uses `calculate_additional_fuel/1` to calculate fuel
@@ -87,7 +84,7 @@ defmodule Day1 do
   def solve2(input) do
     input
     |> Enum.map(&calculate_additional_fuel/1)
-    |> Enum.sum
+    |> Enum.sum()
   end
 
   @doc ~S"""
@@ -110,7 +107,6 @@ defmodule Day1 do
     trunc(:math.floor(val / 3) - 2)
   end
 
-
   @doc ~S"""
   Calculate the fuel required given a mass plus the additional fuel for carrying
   that fuel
@@ -131,5 +127,4 @@ defmodule Day1 do
       x -> calculate_additional_fuel(x, x + sum)
     end
   end
-
 end

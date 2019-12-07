@@ -47,7 +47,7 @@ defmodule Intcode.Computer do
 
   def handle_call(:execute, _from, {name, memory}) do
     new_memory = execute(name, memory)
-    output = Intcode.Computer.IO.output(name)
+    output = Intcode.Computer.IO.peek_output(name)
     {:reply, output, {name, new_memory}}
   end
 
@@ -56,31 +56,28 @@ defmodule Intcode.Computer do
   end
 
   def handle_cast(:raise, name),
-      do: raise RuntimeError, message: "Error, Server #{name} has crashed"
+    do: raise(RuntimeError, message: "Error, Server #{name} has crashed")
 
   def terminate(reason, name) do
-    Logger.info("Exiting worker with reason: #{inspect reason}")
+    Logger.info("Exiting worker with reason: #{inspect(reason)}")
   end
 
   ## Private
   defp via_tuple(name), do: {:via, Registry, {@registry, name}}
 
-
-
   defmodule Instruction do
-    defstruct [opcode: -1, parameters: -1, operation: :no_op, modes: []]
+    defstruct opcode: -1, parameters: -1, operation: :no_op, modes: []
 
     @typedoc """
     An opcode is a struct with a code (the integer that identifies it), the number of parameters.
     and an atom indicating the operation to perform.
     """
     @type t :: %__MODULE__{
-                 opcode: nil | integer(),
-                 parameters: integer(),
-                 operation: :no_op | :add | :mult | :halt,
-                 modes: list()
-               }
-
+            opcode: nil | integer(),
+            parameters: integer(),
+            operation: :no_op | :add | :mult | :halt,
+            modes: list()
+          }
 
     defimpl String.Chars, for: Instruction do
       def to_string(instr) do
@@ -137,8 +134,7 @@ defmodule Intcode.Computer do
     }
   }
 
-
-  @doc"""
+  @doc """
   Given the `initial_memory` applies the `updates`, which are {index, new_value} pairs
   """
   def update_memory(initial_memory, updates) do
@@ -151,7 +147,7 @@ defmodule Intcode.Computer do
     )
   end
 
-  @doc"""
+  @doc """
   Executes the given intcode program in `memory` (a list of integers) and returns the memory after the program halts.
 
   This sets the instruction pointer to 0 initially.
@@ -160,7 +156,7 @@ defmodule Intcode.Computer do
     execute({name, memory, 0})
   end
 
-  @doc"""
+  @doc """
   Executes the instruction defined by the opcode at `ip`
 
   Returns a tuple of the new memory and the new instruction pointer. The new instruction pointer is found by
@@ -169,10 +165,16 @@ defmodule Intcode.Computer do
   """
   def execute({name, memory, ip}) do
     {instruction, parameters} = parse_instruction(memory, ip)
+
     case execute_instruction(name, memory, parameters, instruction.operation) do
-      {:ok, new_memory} -> execute({name, new_memory, update_instruction_pointer(ip, instruction)})
-      {:ok, new_memory, new_ip} -> execute({name, new_memory, new_ip})
-      {:halt, new_memory} -> new_memory
+      {:ok, new_memory} ->
+        execute({name, new_memory, update_instruction_pointer(ip, instruction)})
+
+      {:ok, new_memory, new_ip} ->
+        execute({name, new_memory, new_ip})
+
+      {:halt, new_memory} ->
+        new_memory
     end
   end
 
@@ -186,12 +188,12 @@ defmodule Intcode.Computer do
 
   def execute_instruction(name, memory, [a], :input) do
     output = Keyword.get(a, :value)
-    {:ok, List.replace_at(memory, output, Intcode.Computer.IO.input(name))}
+    {:ok, List.replace_at(memory, output, Intcode.Computer.IO.pop_input(name))}
   end
 
   def execute_instruction(name, memory, [a], :output) do
     output = get_addr(memory, Keyword.get(a, :value))
-    Intcode.Computer.IO.set_output(name, output)
+    Intcode.Computer.IO.push_output(name, output)
     {:ok, memory}
   end
 
@@ -207,7 +209,7 @@ defmodule Intcode.Computer do
       memory,
       params,
       :compare,
-      & &1 < &2
+      &(&1 < &2)
     )
   end
 
@@ -217,7 +219,7 @@ defmodule Intcode.Computer do
       memory,
       params,
       :compare,
-      & &1 == &2
+      &(&1 == &2)
     )
   end
 
@@ -235,7 +237,7 @@ defmodule Intcode.Computer do
       params
       |> Enum.map(&get_value(memory, &1)),
       :jump_if,
-      & &1 != 0
+      &(&1 != 0)
     )
   end
 
@@ -246,7 +248,7 @@ defmodule Intcode.Computer do
       params
       |> Enum.map(&get_value(memory, &1)),
       :jump_if,
-      & &1 == 0
+      &(&1 == 0)
     )
   end
 
@@ -266,10 +268,10 @@ defmodule Intcode.Computer do
     ip + count + 1
   end
 
-  def get_value(_memory, [value: x, mode: :immediate]), do: x
-  def get_value(memory, [value: x, mode: :position]), do: get_addr(memory, x)
+  def get_value(_memory, value: x, mode: :immediate), do: x
+  def get_value(memory, value: x, mode: :position), do: get_addr(memory, x)
 
-  @doc"""
+  @doc """
   Gets the value at `address` in memory
   """
   def get_addr(memory, address) do
@@ -277,7 +279,7 @@ defmodule Intcode.Computer do
     Enum.at(memory, address)
   end
 
-  @doc"""
+  @doc """
   Parses the instruction beginning at `ip`
 
   Returns a tuple of the instruction and it's parameters
@@ -285,12 +287,14 @@ defmodule Intcode.Computer do
   def parse_instruction(memory, ip) do
     unparsed_opcode = get_addr(memory, ip)
     {opcode, modes} = get_opcode_and_modes(unparsed_opcode)
-    instruction = struct(
-      Instruction,
-      @opcode_to_instruction
-      |> Map.get(opcode)
-      |> Map.put(:modes, modes)
-    )
+
+    instruction =
+      struct(
+        Instruction,
+        @opcode_to_instruction
+        |> Map.get(opcode)
+        |> Map.put(:modes, modes)
+      )
 
     parameters = get_parameters_for_instruction(memory, ip, instruction)
     zipped_parameters = zip_parameters_with_modes(parameters, modes)
@@ -300,43 +304,44 @@ defmodule Intcode.Computer do
 
   def get_opcode_and_modes(unparsed_opcode) do
     case to_charlist(unparsed_opcode)
-         |> Enum.reverse do
-      'lin' -> {99, []}
+         |> Enum.reverse() do
+      'lin' ->
+        {99, []}
+
       [a, b | rest] ->
         {
           [b, a]
           |> to_string
-          |> String.to_integer,
+          |> String.to_integer(),
           rest
           |> Enum.map(&num_to_mode/1)
         }
+
       val ->
         {
           val
-          |> Enum.reverse
+          |> Enum.reverse()
           |> to_string
-          |> String.to_integer,
+          |> String.to_integer(),
           []
         }
     end
   end
 
   def zip_parameters_with_modes(parameters, modes) do
-    Enum.zip(parameters, 0..length(parameters) - 1)
-    |> Enum.map(fn {parameter, index} -> {parameter, Enum.at(modes, index, :position)}end)
+    Enum.zip(parameters, 0..(length(parameters) - 1))
+    |> Enum.map(fn {parameter, index} -> {parameter, Enum.at(modes, index, :position)} end)
     |> Enum.map(fn {parameter, mode} -> [value: parameter, mode: mode] end)
   end
 
   def num_to_mode(?1), do: :immediate
   def num_to_mode(?0), do: :position
 
-  @doc"""
+  @doc """
   Returns a list of all the parameters for the `instruction` as given by the `ip` (instruction pointer) and
   the number of parameters `count` from the `memory`
   """
   def get_parameters_for_instruction(memory, ip, %Instruction{parameters: count} = instruction) do
-    Enum.slice(memory, ip + 1..ip + count)
+    Enum.slice(memory, (ip + 1)..(ip + count))
   end
-
-
 end

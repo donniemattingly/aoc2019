@@ -27,7 +27,6 @@ defmodule Day0 do
     |> solve1
   end
 
-
   def sample2 do
     sample_input2()
     |> parse_input2
@@ -56,5 +55,4 @@ defmodule Day0 do
   def solve(input) do
     input
   end
-
 end

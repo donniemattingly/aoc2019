@@ -2,11 +2,12 @@ defmodule Day7 do
   @moduledoc false
 
   def real_input do
-    Utils.get_input(0, 1)
+    Utils.get_input(7, 1)
   end
 
   def sample_input do
     """
+    3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0
     """
   end
 
@@ -26,7 +27,6 @@ defmodule Day7 do
     |> parse_input1
     |> solve1
   end
-
 
   def sample2 do
     sample_input2()
@@ -51,10 +51,12 @@ defmodule Day7 do
 
   def parse_input(input) do
     input
+    |> String.split(",", trim: true)
+    |> Enum.map(&String.trim/1)
+    |> Enum.map(&String.to_integer/1)
   end
 
   def solve(input) do
     input
   end
-
 end

@@ -6,5 +6,4 @@ defmodule UtilsTest do
   doctest Utils.Graph
   doctest Utils.Bitwise
   doctest Utils.Matrix
-
 end

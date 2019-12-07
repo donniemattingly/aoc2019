@@ -51,7 +51,6 @@ defmodule Day6 do
     |> solve1
   end
 
-
   def sample2 do
     sample_input2()
     |> parse_input2
@@ -84,42 +83,45 @@ defmodule Day6 do
   end
 
   def solve(input) do
-    map = input
-          |> Enum.into(%{})
+    map =
+      input
+      |> Enum.into(%{})
+
     Map.keys(map)
-    |> Enum.map(
-         fn k ->
-           Utils.Graph.get_path(map, k)
-           |> length
-         end
-       )
-    |> Enum.sum
+    |> Enum.map(fn k ->
+      Utils.Graph.get_path(map, k)
+      |> length
+    end)
+    |> Enum.sum()
   end
 
   def solve2(input) do
-    map = input
-          |> Enum.into(%{})
+    map =
+      input
+      |> Enum.into(%{})
 
-    reversed_map = map
-                   |> Map.to_list
-                   |> Enum.reduce(
-                        %{},
-                        fn {k, v}, acc ->
-                          acc
-                          |> Map.update(v, MapSet.new([k]), &MapSet.put(&1, k))
-                          |> Map.update(k, MapSet.new([v]), &MapSet.put(&1, v))
-                        end
-                      )
-
+    reversed_map =
+      map
+      |> Map.to_list()
+      |> Enum.reduce(
+        %{},
+        fn {k, v}, acc ->
+          acc
+          |> Map.update(v, MapSet.new([k]), &MapSet.put(&1, k))
+          |> Map.update(k, MapSet.new([v]), &MapSet.put(&1, v))
+        end
+      )
 
     {map, reversed_map}
-    {_q, paths_map} = Utils.Graph.bfs("SAN", fn x ->
-      if x == "YOU" do
-        []
-      else
-        Map.get(reversed_map, x, [])
-      end
-    end)
+
+    {_q, paths_map} =
+      Utils.Graph.bfs("SAN", fn x ->
+        if x == "YOU" do
+          []
+        else
+          Map.get(reversed_map, x, [])
+        end
+      end)
 
     path = Utils.Graph.get_path(paths_map, "YOU")
 
@@ -128,6 +130,7 @@ defmodule Day6 do
 
   def solve_digraph(input) do
     g = :digraph.new()
+
     input
     |> Enum.each(fn {a, b} ->
       :digraph.add_vertex(g, a)
@@ -138,5 +141,4 @@ defmodule Day6 do
 
     :digraph.get_short_path(g, "SAN", "YOU") |> length
   end
-
 end

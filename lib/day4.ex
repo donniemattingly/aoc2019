@@ -2,7 +2,7 @@ defmodule Day4 do
   @moduledoc false
 
   def real_input do
-    [171309, 643603]
+    [171_309, 643_603]
   end
 
   def sample_input do
@@ -26,7 +26,6 @@ defmodule Day4 do
     |> parse_input1
     |> solve1
   end
-
 
   def sample2 do
     sample_input2()
@@ -54,6 +53,7 @@ defmodule Day4 do
 
   def common_filter(input) do
     [a, b] = input
+
     a..b
     |> Enum.map(&to_charlist/1)
     |> Enum.filter(&never_decrease/1)
@@ -62,13 +62,13 @@ defmodule Day4 do
   def solve(input) do
     common_filter(input)
     |> Enum.reject(&no_duplicates?/1)
-    |> Enum.count
+    |> Enum.count()
   end
 
   def solve2(input) do
     common_filter(input)
     |> Enum.filter(&has_pair_of_digits?/1)
-    |> Enum.count
+    |> Enum.count()
   end
 
   def password_to_number_frequencies(password) do
@@ -78,19 +78,18 @@ defmodule Day4 do
   def no_duplicates?(password) do
     password
     |> password_to_number_frequencies
-    |> Map.values
+    |> Map.values()
     |> Enum.all?(fn x -> x == 1 end)
   end
 
   def has_pair_of_digits?(password) do
     password
     |> password_to_number_frequencies
-    |> Map.values
+    |> Map.values()
     |> Enum.member?(2)
   end
 
   def never_decrease(password) do
     Enum.sort(password) == password
   end
-
 end

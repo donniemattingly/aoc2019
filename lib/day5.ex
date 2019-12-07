@@ -29,7 +29,6 @@ defmodule Day5 do
     |> solve1
   end
 
-
   def sample2 do
     sample_input2()
     |> parse_input2
@@ -69,5 +68,4 @@ defmodule Day5 do
 
     Intcode.Io.output()
   end
-
 end

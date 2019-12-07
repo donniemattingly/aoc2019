@@ -30,28 +30,29 @@ defmodule Utils do
       :ok
   """
   def get_input(day, part, options \\ []) do
-    read = case Keyword.get(options, :stream, false) do
-      true -> &File.stream!/1
-      false -> &File.read!/1
-    end
+    read =
+      case Keyword.get(options, :stream, false) do
+        true -> &File.stream!/1
+        false -> &File.read!/1
+      end
 
-    map = case Keyword.get(options, :split, false) do
-      true -> fn x -> String.split(x,"\n", trim: true) end
-      false -> fn x -> x end
-    end
+    map =
+      case Keyword.get(options, :split, false) do
+        true -> fn x -> String.split(x, "\n", trim: true) end
+        false -> fn x -> x end
+      end
 
     "inputs/input-#{day}-#{part}.txt"
     |> read.()
     |> map.()
   end
 
-
   @doc """
   Run the function `fun` and returns the time in seconds elapsed
   while running it
   """
   def time(fun) do
-    {elapsed, _ } = :timer.tc(fun)
+    {elapsed, _} = :timer.tc(fun)
 
     elapsed / 1_000_000
   end
@@ -81,11 +82,10 @@ defmodule Utils do
   def md5(value) do
     :crypto.hash(:md5, value)
     |> Base.encode16()
-    |> String.downcase
+    |> String.downcase()
   end
 
-
-  @doc"""
+  @doc """
   Swaps the element at `pos_a` in `list` with the element at `pos_b`
 
   ## Examples
@@ -94,6 +94,7 @@ defmodule Utils do
 
   """
   def swap(list, pos_a, pos_a), do: list
+
   def swap(list, pos_a, pos_b) when pos_a < pos_b do
     {initial, rest} = Enum.split(list, pos_a)
     {between, tail} = Enum.split(rest, pos_b - pos_a)
@@ -101,10 +102,10 @@ defmodule Utils do
     b = hd(tail)
     initial ++ [b] ++ tl(between) ++ [a] ++ tl(tail)
   end
+
   def swap(list, pos_a, pos_b) when pos_b < pos_a, do: swap(list, pos_b, pos_a)
 
-
-  @doc"""
+  @doc """
   Generates all the permutations for the input `list`
 
   ## Examples
@@ -112,7 +113,9 @@ defmodule Utils do
       [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
   """
   def permutations([]), do: [[]]
-  def permutations(list), do: for elem <- list, rest <- permutations(list--[elem]), do: [elem|rest]
+
+  def permutations(list),
+    do: for(elem <- list, rest <- permutations(list -- [elem]), do: [elem | rest])
 
   def log_inspect(value, description, opts \\ []) when @log do
     IO.puts(description <> ": ")
@@ -120,5 +123,4 @@ defmodule Utils do
   end
 
   def log_inspect(value), do: value
-
 end

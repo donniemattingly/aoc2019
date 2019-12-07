@@ -28,7 +28,6 @@ defmodule Day2 do
     |> solve1
   end
 
-
   def sample2 do
     sample_input2()
     |> parse_input2
@@ -68,24 +67,28 @@ defmodule Day2 do
   def solve2(input) do
     options = for a <- 0..99, b <- 0..99, do: {a, b}
 
-    [{{a, b}, _}] = options
-                  |> Stream.map(fn {a, b} -> {{a, b}, transform_input(input, a, b)} end)
-                  |> Stream.map(fn {vals, input} -> {vals, op({input, 0})} end)
-                  |> Stream.filter(fn {vals, [a | rest]} -> a == 19690720 end)
-                  |> Enum.to_list()
+    [{{a, b}, _}] =
+      options
+      |> Stream.map(fn {a, b} -> {{a, b}, transform_input(input, a, b)} end)
+      |> Stream.map(fn {vals, input} -> {vals, op({input, 0})} end)
+      |> Stream.filter(fn {vals, [a | rest]} -> a == 19_690_720 end)
+      |> Enum.to_list()
 
     100 * a + b
   end
 
   def transform_input(input, noun, verb) do
-    new_input = input
-                |> List.replace_at(1, noun)
-                |> List.replace_at(2, verb)
+    new_input =
+      input
+      |> List.replace_at(1, noun)
+      |> List.replace_at(2, verb)
   end
 
   def op({list, :halt}), do: list
+
   def op({list, ip}) do
-    range = ip..ip + 3
+    range = ip..(ip + 3)
+
     case Enum.at(list, ip) do
       1 -> add(ip, list)
       2 -> mult(ip, list)
@@ -95,7 +98,7 @@ defmodule Day2 do
   end
 
   def get_args(ip, list) do
-    Enum.slice(list, ip + 1..ip + 3)
+    Enum.slice(list, (ip + 1)..(ip + 3))
   end
 
   def perform_op(list, [input1, input2, output], fun) do
@@ -110,5 +113,4 @@ defmodule Day2 do
   def mult(ip, list) do
     {perform_op(list, get_args(ip, list), fn a, b -> a * b end), ip + 4}
   end
-
 end
