@@ -16,7 +16,7 @@ defmodule Intcode.Supervisor do
 
     DynamicSupervisor.start_child(
       __MODULE__,
-      %{id: Intcode.Computer.IO, start: {Intcode.Computer.IO, :start_link, [{name, :io}]}, restart: :transient}
+      %{id: Intcode.Computer.IO, start: {Intcode.Computer.IO, :start_link, [name]}, restart: :transient}
     )
   end
 

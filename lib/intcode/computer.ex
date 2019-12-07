@@ -22,6 +22,8 @@ defmodule Intcode.Computer do
     GenServer.start_link(__MODULE__, {name, memory}, name: via_tuple(name))
   end
 
+  def run(name), do: GenServer.call(via_tuple(name), :execute)
+
   def get_memory(name), do: GenServer.call(via_tuple(name), :get_memory)
 
   def set_memory(name, memory), do: GenServer.call(via_tuple(name), {:set_memory, memory})
@@ -43,6 +45,12 @@ defmodule Intcode.Computer do
     {:reply, memory, {name, memory}}
   end
 
+  def handle_call(:execute, _from, {name, memory}) do
+    new_memory = execute(name, memory)
+    output = Intcode.Computer.IO.output(name)
+    {:reply, output, {name, new_memory}}
+  end
+
   def handle_cast(:work, {name, memory}) do
     {:noreply, name}
   end
@@ -51,7 +59,7 @@ defmodule Intcode.Computer do
       do: raise RuntimeError, message: "Error, Server #{name} has crashed"
 
   def terminate(reason, name) do
-    Logger.info("Exiting worker: #{name} with reason: #{inspect reason}")
+    Logger.info("Exiting worker with reason: #{inspect reason}")
   end
 
   ## Private

@@ -3,7 +3,6 @@ defmodule Intcode.Computer.IO do
 
   @registry :intcode_registry
   def start_link(name, opts \\ []) do
-    IO.puts("starting")
     Agent.start_link(fn -> [input: Keyword.get(opts, :input), output: Keyword.get(opts, :output)] end, name: via_tuple(name))
   end
 
