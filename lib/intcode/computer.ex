@@ -1,35 +1,62 @@
-defmodule Utils.Intcode do
-  @moduledoc"""
-  Utils.Intcode seems to be important this year for Advent of Code, so I'm preemptively moving out
-  some helper functions here.
+defmodule Intcode.Computer do
+  @moduledoc """
+  A server representing an intcode computer.
+
+  The state for each computer contains the name, and memory.
+
+  The IO agent is also started when this computer is started. It is stored in the registry as
+  `{name, :io}` where `name` is the name used to start the computer
   """
+  use GenServer
+  require Logger
 
-  defmodule Io do
-    use Agent
+  @registry :intcode_registry
 
-    def start_link(opts \\ []) do
-      Agent.start_link(
-        fn -> [input: Keyword.get(opts, :input), output: Keyword.get(opts, :output)] end,
-        name: __MODULE__
-      )
-    end
+  ## API
 
-    def input do
-      Agent.get(__MODULE__, fn state -> Keyword.get(state, :input) end)
-    end
-
-    def output do
-      Agent.get(__MODULE__, fn state -> Keyword.get(state, :output)  end)
-    end
-
-    def set_input(input) do
-      Agent.update(__MODULE__, fn state -> Keyword.put(state, :input, input) end)
-    end
-
-    def set_output(output) do
-      Agent.update(__MODULE__, fn state -> Keyword.put(state, :output, output) end)
-    end
+  @doc """
+  Starts
+  """
+  def start_link(name, memory) do
+    IO.inspect({name, memory})
+    GenServer.start_link(__MODULE__, {name, memory}, name: via_tuple(name))
   end
+
+  def get_memory(name), do: GenServer.call(via_tuple(name), :get_memory)
+
+  def set_memory(name, memory), do: GenServer.call(via_tuple(name), {:set_memory, memory})
+
+  def stop(name), do: GenServer.stop(via_tuple(name))
+
+  def crash(name), do: GenServer.cast(via_tuple(name), :raise)
+
+  ## Callbacks
+  def init({name, memory}) do
+    {:ok, {name, memory}}
+  end
+
+  def handle_call({:set_memory, new_memory}, _from, {name, _memory}) do
+    {:reply, new_memory, {name, new_memory}}
+  end
+
+  def handle_call(:get_memory, _from, {name, memory}) do
+    {:reply, memory, {name, memory}}
+  end
+
+  def handle_cast(:work, {name, memory}) do
+    {:noreply, name}
+  end
+
+  def handle_cast(:raise, name),
+      do: raise RuntimeError, message: "Error, Server #{name} has crashed"
+
+  def terminate(reason, name) do
+    Logger.info("Exiting worker: #{name} with reason: #{inspect reason}")
+  end
+
+  ## Private
+  defp via_tuple(name), do: {:via, Registry, {@registry, name}}
+
 
 
   defmodule Instruction do
@@ -151,12 +178,12 @@ defmodule Utils.Intcode do
 
   def execute_instruction(name, memory, [a], :input) do
     output = Keyword.get(a, :value)
-    {:ok, List.replace_at(memory, output, Utils.Intcode.Io.input())}
+    {:ok, List.replace_at(memory, output, Intcode.Computer.IO.input(name))}
   end
 
   def execute_instruction(name, memory, [a], :output) do
     output = get_addr(memory, Keyword.get(a, :value))
-    Utils.Intcode.Io.set_output(output)
+    Intcode.Computer.IO.set_output(name, output)
     {:ok, memory}
   end
 
@@ -302,5 +329,6 @@ defmodule Utils.Intcode do
   def get_parameters_for_instruction(memory, ip, %Instruction{parameters: count} = instruction) do
     Enum.slice(memory, ip + 1..ip + count)
   end
+
 
 end
