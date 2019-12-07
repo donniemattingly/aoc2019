@@ -55,7 +55,7 @@ defmodule Day6 do
   def sample2 do
     sample_input2()
     |> parse_input2
-    |> solve2
+    |> solve_digraph
   end
 
   def part2 do
@@ -70,7 +70,7 @@ defmodule Day6 do
   def parse_input1(input), do: parse_input(input)
   def parse_input2(input), do: parse_input(input)
 
-  def solve1(input), do: solve(input)
+  def solve1(input), do: solve_digraph(input)
 
   def parse_input(input) do
     input
@@ -124,6 +124,19 @@ defmodule Day6 do
     path = Utils.Graph.get_path(paths_map, "YOU")
 
     length(path) - 3
+  end
+
+  def solve_digraph(input) do
+    g = :digraph.new()
+    input
+    |> Enum.each(fn {a, b} ->
+      :digraph.add_vertex(g, a)
+      :digraph.add_vertex(g, b)
+      :digraph.add_edge(g, a, b)
+      :digraph.add_edge(g, b, a)
+    end)
+
+    :digraph.get_short_path(g, "SAN", "YOU") |> length
   end
 
 end
