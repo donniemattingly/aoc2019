@@ -18,8 +18,7 @@ defmodule Intcode.Computer do
   Starts
   """
   def start_link(name, memory) do
-    IO.inspect({name, memory})
-    GenServer.start_link(__MODULE__, {name, memory}, name: via_tuple(name))
+    GenServer.start_link(__MODULE__, {name, memory, 0}, name: via_tuple(name))
   end
 
   def run(name), do: GenServer.call(via_tuple(name), :execute)
@@ -33,25 +32,25 @@ defmodule Intcode.Computer do
   def crash(name), do: GenServer.cast(via_tuple(name), :raise)
 
   ## Callbacks
-  def init({name, memory}) do
-    {:ok, {name, memory}}
+  def init({name, memory, ip}) do
+    {:ok, {name, memory, ip}}
   end
 
-  def handle_call({:set_memory, new_memory}, _from, {name, _memory}) do
-    {:reply, new_memory, {name, new_memory}}
+  def handle_call({:set_memory, new_memory}, _from, {name, _memory, ip}) do
+    {:reply, new_memory, {name, new_memory, ip}}
   end
 
-  def handle_call(:get_memory, _from, {name, memory}) do
-    {:reply, memory, {name, memory}}
+  def handle_call(:get_memory, _from, {name, memory, ip}) do
+    {:reply, memory, {name, memory, ip}}
   end
 
-  def handle_call(:execute, _from, {name, memory}) do
-    new_memory = execute(name, memory)
+  def handle_call(:execute, _from, {name, memory, ip}) do
+    {status, new_memory, new_ip} = execute({name, memory, ip})
     output = Intcode.Computer.IO.peek_output(name)
-    {:reply, output, {name, new_memory}}
+    {:reply, {status, output}, {name, new_memory, new_ip}}
   end
 
-  def handle_cast(:work, {name, memory}) do
+  def handle_cast(:work, {name, memory, ip}) do
     {:noreply, name}
   end
 
@@ -148,15 +147,6 @@ defmodule Intcode.Computer do
   end
 
   @doc """
-  Executes the given intcode program in `memory` (a list of integers) and returns the memory after the program halts.
-
-  This sets the instruction pointer to 0 initially.
-  """
-  def execute(name, memory) do
-    execute({name, memory, 0})
-  end
-
-  @doc """
   Executes the instruction defined by the opcode at `ip`
 
   Returns a tuple of the new memory and the new instruction pointer. The new instruction pointer is found by
@@ -172,9 +162,10 @@ defmodule Intcode.Computer do
 
       {:ok, new_memory, new_ip} ->
         execute({name, new_memory, new_ip})
-
+      {:waiting, new_memory} ->
+        {:waiting, new_memory, ip}
       {:halt, new_memory} ->
-        new_memory
+        {:finished, new_memory, 0}
     end
   end
 
@@ -188,7 +179,10 @@ defmodule Intcode.Computer do
 
   def execute_instruction(name, memory, [a], :input) do
     output = Keyword.get(a, :value)
-    {:ok, List.replace_at(memory, output, Intcode.Computer.IO.pop_input(name))}
+    case Intcode.Computer.IO.dequeue_input(name) do
+      nil -> {:waiting, memory}
+      x -> {:ok, List.replace_at(memory, output, x)}
+    end
   end
 
   def execute_instruction(name, memory, [a], :output) do

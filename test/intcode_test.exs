@@ -13,11 +13,11 @@ defmodule ComputerTest do
   end
 
   test "Simple Add", %{name: name} do
-    assert Computer.execute(name, [1, 0, 0, 0, 99]) == [2, 0, 0, 0, 99]
+    assert Computer.execute({name, [1, 0, 0, 0, 99], 0}) == {:finished, [2, 0, 0, 0, 99], 0}
   end
 
   test "Simple Multiply", %{name: name} do
-    assert Computer.execute(name, [2, 3, 0, 3, 99]) == [2, 3, 0, 6, 99]
+    assert Computer.execute({name, [2, 3, 0, 3, 99], 0}) == {:finished, [2, 3, 0, 6, 99], 0}
   end
 
   test "Day 2 Part 1 Works", %{name: name} do
@@ -27,7 +27,7 @@ defmodule ComputerTest do
       |> List.replace_at(1, 12)
       |> List.replace_at(2, 2)
 
-    assert hd(Computer.execute(name, input)) == 3_267_740
+    assert (Computer.execute({name, input, 0}) |> elem(1) |> hd()) == 3_267_740
   end
 
   test "Day 5 part 1 works", %{name: name} do
@@ -36,7 +36,7 @@ defmodule ComputerTest do
       |> Day5.parse_input()
 
     Computer.IO.start_link(name, input: [1])
-    Computer.execute(name, input)
+    Computer.execute({name, input, 0})
 
     assert Computer.IO.peek_output(name) == 13_787_043
   end
@@ -44,7 +44,7 @@ defmodule ComputerTest do
   test "equal to 8 when in position mode and input is not 8", %{name: name} do
     input = [3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8]
     Computer.IO.start_link(name, input: [0])
-    Computer.execute(name, input)
+    Computer.execute({name, input, 0})
 
     assert Computer.IO.peek_output(name) == 0
   end
@@ -52,7 +52,7 @@ defmodule ComputerTest do
   test "equal to 8 when in position mode and input is 8", %{name: name} do
     input = [3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8]
     Computer.IO.start_link(name, input: [8])
-    Computer.execute(name, input)
+    Computer.execute({name, input, 0})
 
     assert Computer.IO.peek_output(name) == 1
   end
@@ -60,7 +60,7 @@ defmodule ComputerTest do
   test "less than 8 when in position mode and input is 8", %{name: name} do
     input = [3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8]
     Computer.IO.start_link(name, input: [8])
-    Computer.execute(name, input)
+    Computer.execute({name, input, 0})
 
     assert Computer.IO.peek_output(name) == 0
   end
@@ -68,7 +68,7 @@ defmodule ComputerTest do
   test "less than 8 when in position mode and input is less than 8", %{name: name} do
     input = [3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8]
     Computer.IO.start_link(name, input: [5])
-    Computer.execute(name, input)
+    Computer.execute({name, input, 0})
 
     assert Computer.IO.peek_output(name) == 1
   end
@@ -76,7 +76,7 @@ defmodule ComputerTest do
   test "equal to 8 when in immediate mode and input is not 8", %{name: name} do
     input = [3, 3, 1108, -1, 8, 3, 4, 3, 99]
     Computer.IO.start_link(name, input: [0])
-    Computer.execute(name, input)
+    Computer.execute({name, input, 0})
 
     assert Computer.IO.peek_output(name) == 0
   end
@@ -84,7 +84,7 @@ defmodule ComputerTest do
   test "equal to 8 when in immediate mode and input is 8", %{name: name} do
     input = [3, 3, 1108, -1, 8, 3, 4, 3, 99]
     Computer.IO.start_link(name, input: [8])
-    Computer.execute(name, input)
+    Computer.execute({name, input, 0})
 
     assert Computer.IO.peek_output(name) == 1
   end
@@ -92,7 +92,7 @@ defmodule ComputerTest do
   test "less than 8 when in immediate mode and input is 8", %{name: name} do
     input = [3, 3, 1107, -1, 8, 3, 4, 3, 99]
     Computer.IO.start_link(name, input: [8])
-    Computer.execute(name, input)
+    Computer.execute({name, input, 0})
 
     assert Computer.IO.peek_output(name) == 0
   end
@@ -100,7 +100,7 @@ defmodule ComputerTest do
   test "less than 8 when in immediate mode and input is less than 8", %{name: name} do
     input = [3, 3, 1107, -1, 8, 3, 4, 3, 99]
     Computer.IO.start_link(name, input: [5])
-    Computer.execute(name, input)
+    Computer.execute({name, input, 0})
 
     assert Computer.IO.peek_output(name) == 1
   end
@@ -108,7 +108,7 @@ defmodule ComputerTest do
   test "jump if when in position mode and input is 0", %{name: name} do
     input = [3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9]
     Computer.IO.start_link(name, input: [0])
-    Computer.execute(name, input)
+    Computer.execute({name, input, 0})
 
     assert Computer.IO.peek_output(name) == 0
   end
@@ -116,7 +116,7 @@ defmodule ComputerTest do
   test "jump if when in position mode and input is not 0", %{name: name} do
     input = [3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9]
     Computer.IO.start_link(name, input: [12])
-    Computer.execute(name, input)
+    Computer.execute({name, input, 0})
 
     assert Computer.IO.peek_output(name) == 1
   end
@@ -124,7 +124,7 @@ defmodule ComputerTest do
   test "jump if when in immediate mode and input is 0", %{name: name} do
     input = [3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1]
     Computer.IO.start_link(name, input: [0])
-    Computer.execute(name, input)
+    Computer.execute({name, input, 0})
 
     assert Computer.IO.peek_output(name) == 0
   end
@@ -132,7 +132,7 @@ defmodule ComputerTest do
   test "jump if when in immediate mode and input is not 0", %{name: name} do
     input = [3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1]
     Computer.IO.start_link(name, input: [12])
-    Computer.execute(name, input)
+    Computer.execute({name, input, 0})
 
     assert Computer.IO.peek_output(name) == 1
   end
@@ -147,6 +147,6 @@ defmodule ComputerTest do
     program = [3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1]
     Intcode.Supervisor.start_computer(name, program)
     Computer.IO.push_input(name, 12)
-    assert Computer.run(name) == 1
+    assert Computer.run(name) == {:finished, 1}
   end
 end

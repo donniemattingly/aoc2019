@@ -6,6 +6,14 @@ defmodule Intcode.Computer.IO do
     Agent.start_link(fn -> [input: Keyword.get(opts, :input, []), output: Keyword.get(opts, :output, [])] end, name: via_tuple(name))
   end
 
+  def dump_state(name) do
+    Agent.get(via_tuple(name), & &1)
+  end
+
+  def reset(name) do
+    Agent.update(via_tuple(name), fn _state -> [input: [], output: []] end)
+  end
+
   def peek_input(name) do
     Agent.get(via_tuple(name), fn state -> pop(state, :input) |> elem(0) end)
   end
@@ -22,6 +30,14 @@ defmodule Intcode.Computer.IO do
     Agent.get_and_update(via_tuple(name), fn state -> pop(state, :output)  end)
   end
 
+  def dequeue_input(name) do
+    Agent.get_and_update(via_tuple(name), fn state -> dequeue(state, :input) end)
+  end
+
+  def dequeue_output(name) do
+    Agent.get_and_update(via_tuple(name), fn state -> dequeue(state, :output)  end)
+  end
+
   def push_input(name, input) do
     Agent.update(via_tuple(name), fn state -> push(state, :input, input) end)
   end
@@ -33,6 +49,13 @@ defmodule Intcode.Computer.IO do
   def pop(state, key) do
     case Keyword.get(state, key) do
       [h | t] -> {h, Keyword.put(state, key, t)}
+      _ -> {nil, state}
+    end
+  end
+
+  def dequeue(state, key) do
+    case Keyword.get(state, key) |> Enum.reverse do
+      [h | t] -> {h, Keyword.put(state, key, t |> Enum.reverse)}
       _ -> {nil, state}
     end
   end
