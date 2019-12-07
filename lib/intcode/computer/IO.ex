@@ -7,43 +7,51 @@ defmodule Intcode.Computer.IO do
   end
 
   def dump_state(name) do
-    Agent.get(via_tuple(name), & &1)
+    Agent.get(via_tuple(name), & &1) |> IO.inspect
   end
 
   def reset(name) do
-    Agent.update(via_tuple(name), fn _state -> [input: [], output: []] end)
+    Agent.update(via_tuple(name), fn _state -> [input: [], output: []] end) |> IO.inspect
   end
 
   def peek_input(name) do
-    Agent.get(via_tuple(name), fn state -> pop(state, :input) |> elem(0) end)
+    IO.inspect({:peek_input, name, dump_state(name)})
+    Agent.get(via_tuple(name), fn state -> pop(state, :input) |> elem(0) end) |> IO.inspect
   end
 
   def peek_output(name) do
-    Agent.get(via_tuple(name), fn state -> pop(state, :output) |> elem(0) end)
+    IO.inspect({:peek_output, name, dump_state(name)})
+    Agent.get(via_tuple(name), fn state -> pop(state, :output) |> elem(0) end) |> IO.inspect
   end
 
   def pop_input(name) do
-    Agent.get_and_update(via_tuple(name), fn state -> pop(state, :input) end)
+    IO.inspect({:pop_input, name, dump_state(name)})
+    Agent.get_and_update(via_tuple(name), fn state -> pop(state, :input) end) |> IO.inspect
   end
 
   def pop_output(name) do
-    Agent.get_and_update(via_tuple(name), fn state -> pop(state, :output)  end)
+    IO.inspect({:pop_output, name, dump_state(name)})
+    Agent.get_and_update(via_tuple(name), fn state -> pop(state, :output)  end) |> IO.inspect
   end
 
   def dequeue_input(name) do
-    Agent.get_and_update(via_tuple(name), fn state -> dequeue(state, :input) end)
+    IO.inspect({:dequeue_input, name, dump_state(name)})
+    Agent.get_and_update(via_tuple(name), fn state -> dequeue(state, :input) end) |> IO.inspect
   end
 
   def dequeue_output(name) do
-    Agent.get_and_update(via_tuple(name), fn state -> dequeue(state, :output)  end)
+    IO.inspect({:dequeue_output, name, dump_state(name)})
+    Agent.get_and_update(via_tuple(name), fn state -> dequeue(state, :output)  end) |> IO.inspect
   end
 
   def push_input(name, input) do
-    Agent.update(via_tuple(name), fn state -> push(state, :input, input) end)
+    IO.inspect({:push_input, input, name, dump_state(name)})
+    Agent.update(via_tuple(name), fn state -> push(state, :input, input) end) |> IO.inspect
   end
 
   def push_output(name, output) do
-    Agent.update(via_tuple(name), fn state -> push(state, :output, output) end)
+    IO.inspect({:push_output, output, name, dump_state(name)})
+    Agent.update(via_tuple(name), fn state -> push(state, :output, output) end) |> IO.inspect
   end
 
   def pop(state, key) do

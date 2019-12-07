@@ -44,9 +44,10 @@ defmodule Intcode.Computer do
     {:reply, memory, {name, memory, ip}}
   end
 
-  def handle_call(:execute, _from, {name, memory, ip}) do
+  def handle_call(:execute, _from, {name, memory, ip} = input) do
     {status, new_memory, new_ip} = execute({name, memory, ip})
-    output = Intcode.Computer.IO.peek_output(name)
+    IO.inspect({ip, new_ip})
+    output = Intcode.Computer.IO.dequeue_output(name)
     {:reply, {status, output}, {name, new_memory, new_ip}}
   end
 
@@ -155,15 +156,15 @@ defmodule Intcode.Computer do
   """
   def execute({name, memory, ip}) do
     {instruction, parameters} = parse_instruction(memory, ip)
-
     case execute_instruction(name, memory, parameters, instruction.operation) do
       {:ok, new_memory} ->
         execute({name, new_memory, update_instruction_pointer(ip, instruction)})
-
       {:ok, new_memory, new_ip} ->
         execute({name, new_memory, new_ip})
       {:waiting, new_memory} ->
-        {:waiting, new_memory, ip}
+        new_ip = update_instruction_pointer(ip, instruction)
+        IO.inspect({instruction.operation, ip, new_ip})
+        {:waiting, new_memory, update_instruction_pointer(ip, instruction)}
       {:halt, new_memory} ->
         {:finished, new_memory, 0}
     end
@@ -179,7 +180,7 @@ defmodule Intcode.Computer do
 
   def execute_instruction(name, memory, [a], :input) do
     output = Keyword.get(a, :value)
-    case Intcode.Computer.IO.dequeue_input(name) do
+    case Intcode.Computer.IO.dequeue_input(name) |> IO.inspect do
       nil -> {:waiting, memory}
       x -> {:ok, List.replace_at(memory, output, x)}
     end

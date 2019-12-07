@@ -15,7 +15,7 @@ defmodule Day7 do
 
   def sample_input2 do
     """
-    3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5
+    3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10
     """
   end
 
@@ -66,7 +66,10 @@ defmodule Day7 do
 
   def solve2(input) do
     Utils.permutations([5, 6, 7, 8, 9])
-    |> Stream.map(fn phase_setting -> {get_output_signal_for_phase_setting_with_feedback(phase_setting, input), phase_setting} end)
+    |> Stream.map(
+         fn phase_setting -> {get_output_signal_for_phase_setting_with_feedback(phase_setting, input), phase_setting}
+         end
+       )
     |> Enum.max_by(fn {output_signal, setting} -> output_signal end)
   end
 
@@ -74,50 +77,64 @@ defmodule Day7 do
   def get_output_signal_for_phase_setting(phase_setting, program) do
 
     Enum.zip(@amplifier_names, phase_setting)
-    |> Enum.reduce(0, fn {name, phase}, input_signal ->
-      Intcode.Supervisor.start_computer(name)
-      Computer.set_memory(name, program)
-      Computer.IO.reset(name)
-      Computer.IO.push_input(name, phase)
-      Computer.IO.push_input(name, input_signal)
-      {status, val} = Computer.run(name)
-      val
-    end)
+    |> Enum.reduce(
+         0,
+         fn {name, phase}, input_signal ->
+           Intcode.Supervisor.start_computer(name)
+           Computer.set_memory(name, program)
+           Computer.IO.reset(name)
+           Computer.IO.push_input(name, phase)
+           Computer.IO.push_input(name, input_signal)
+           {status, val} = Computer.run(name)
+           val
+         end
+       )
   end
 
   def get_output_signal_for_phase_setting_with_feedback(phase_setting, program) do
     create_computers(Enum.zip(@amplifier_names, phase_setting))
-    links = link_amplifiers(@amplifier_names)
-    run(hd(@amplifier_names), program, 0, links)
+    queue = Enum.reduce(@amplifier_names, :queue.new, fn x, acc -> :queue.in(x, acc) end)
+    run(queue, program, 0)
   end
 
-  def run(current_amplifier, program, input, links) do
-    Computer.IO.push_input(current_amplifier, input)
-    Computer.set_memory(current_amplifier, program)
-    case Computer.run(current_amplifier) do
-      x -> x
-      {:finished, result} -> result
-      {:waiting, output} ->
-        run(Map.get(links, current_amplifier), program, output, links)
+  def run(queue, program, input) do
+    case :queue.out(queue) do
+      {:empty, q} -> input
+      {{:value, current}, q} -> case run_stage(current, program, input) do
+                                  {:finished, value} -> run(q, program, value)
+                                  {:waiting, value} -> run(:queue.in(current, q), program, value)
+                                end
     end
+  end
+
+  def run_stage(amplifier, program, input) do
+    Computer.IO.push_input(amplifier, input)
+    Computer.set_memory(amplifier, program)
+    Computer.run(amplifier)
   end
 
   def link_amplifiers(amplifiers) do
     Enum.chunk_every(amplifiers, 2, 1)
-    |> Enum.reduce(%{}, fn x, acc ->
-      case x do
-        [a, b] -> Map.put(acc, a, b)
-        [a] -> Map.put(acc, a, hd(amplifiers))
-      end
-    end)
+    |> Enum.reduce(
+         %{},
+         fn x, acc ->
+           case x do
+             [a, b] -> Map.put(acc, a, b)
+             [a] -> Map.put(acc, a, hd(amplifiers))
+           end
+         end
+       )
   end
 
   def create_computers(names) do
-    names |> Enum.each(fn {name, phase} ->
-      Intcode.Supervisor.start_computer(name)
-      Computer.IO.reset(name)
-      Computer.IO.push_input(name, phase)
-    end)
+    names
+    |> Enum.each(
+         fn {name, phase} ->
+           Intcode.Supervisor.start_computer(name)
+           Computer.IO.reset(name)
+           Computer.IO.push_input(name, phase)
+         end
+       )
   end
 
 end
