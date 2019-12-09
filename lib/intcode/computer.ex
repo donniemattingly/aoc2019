@@ -46,8 +46,7 @@ defmodule Intcode.Computer do
 
   def handle_call(:execute, _from, {name, memory, ip} = input) do
     {status, new_memory, new_ip} = execute({name, memory, ip})
-    IO.inspect({ip, new_ip})
-    output = Intcode.Computer.IO.dequeue_output(name)
+    output = Intcode.Computer.IO.peek_output(name)
     {:reply, {status, output}, {name, new_memory, new_ip}}
   end
 
@@ -127,6 +126,11 @@ defmodule Intcode.Computer do
       parameters: 3,
       operation: :equals
     },
+    9 => %{
+      opcode: 9,
+      parameters: 1,
+      operation: :adjust_base
+    },
     99 => %{
       opcode: 99,
       parameters: 0,
@@ -142,9 +146,26 @@ defmodule Intcode.Computer do
       updates,
       initial_memory,
       fn {index, new_value}, memory ->
-        List.replace_at(memory, index, new_value)
+        Map.put(memory, index, new_value)
       end
     )
+  end
+
+  def random_name() do
+    :crypto.strong_rand_bytes(10)
+    |> Base.url_encode64()
+    |> binary_part(0, 10)
+  end
+
+  def execute({name, memory, ip}) when is_list(memory) do
+    memory_map = 0..length(memory) - 1 |> Enum.zip(memory) |> Enum.into(%{})
+    execute({name, memory_map, ip})
+  end
+
+  def memory_map_to_list(memory) do
+    {min, max} = memory |> Map.keys() |> Enum.min_max()
+    min..max
+    |> Enum.map(&Map.get(memory, &1, 0))
   end
 
   @doc """
@@ -163,7 +184,6 @@ defmodule Intcode.Computer do
         execute({name, new_memory, new_ip})
       {:waiting, new_memory} ->
         new_ip = update_instruction_pointer(ip, instruction)
-        IO.inspect({instruction.operation, ip, new_ip})
         {:waiting, new_memory, update_instruction_pointer(ip, instruction)}
       {:halt, new_memory} ->
         {:finished, new_memory, 0}
@@ -171,31 +191,38 @@ defmodule Intcode.Computer do
   end
 
   def execute_instruction(name, memory, [a, b, c], :simple_infix, fun) do
-    input1 = get_value(memory, a)
-    input2 = get_value(memory, b)
-    output = Keyword.get(c, :value)
+    input1 = get_value(name, memory, a)
+    input2 = get_value(name, memory, b)
+    output = get_value(name, memory, Keyword.put(c, :mode, :output))
 
-    {:ok, List.replace_at(memory, output, fun.(input1, input2))}
+    {:ok, Map.put(memory, output, fun.(input1, input2))}
   end
 
   def execute_instruction(name, memory, [a], :input) do
-    output = Keyword.get(a, :value)
-    case Intcode.Computer.IO.dequeue_input(name) |> IO.inspect do
+    output = get_value(name, memory, Keyword.put(a, :mode, :output))
+    case Intcode.Computer.IO.dequeue_input(name)  do
       nil -> {:waiting, memory}
-      x -> {:ok, List.replace_at(memory, output, x)}
+      x -> {:ok, Map.put(memory, output, x)}
     end
   end
 
   def execute_instruction(name, memory, [a], :output) do
-    output = get_addr(memory, Keyword.get(a, :value))
+    output = get_value(name, memory, Keyword.put(a, :mode, :output))
     Intcode.Computer.IO.push_output(name, output)
+    IO.inspect(output)
+    {:ok, memory}
+  end
+
+  def execute_instruction(name, memory, [a], :adjust_base) do
+    base = Intcode.Computer.IO.get_relative_base(name)
+    Intcode.Computer.IO.set_relative_base(name, base + get_value(name, memory, a))
     {:ok, memory}
   end
 
   def execute_instruction(name, m, [a, b, c], :compare, comparator) do
-    replacement = if comparator.(get_value(m, a), get_value(m, b)), do: 1, else: 0
-    output = Keyword.get(c, :value)
-    {:ok, List.replace_at(m, output, replacement)}
+    replacement = if comparator.(get_value(name, m, a), get_value(name, m, b)), do: 1, else: 0
+    output = get_value(name, m, Keyword.put(c, :mode, :output))
+    {:ok, Map.put(m, output, replacement)}
   end
 
   def execute_instruction(name, memory, params, :less_than) do
@@ -230,7 +257,7 @@ defmodule Intcode.Computer do
       name,
       memory,
       params
-      |> Enum.map(&get_value(memory, &1)),
+      |> Enum.map(&get_value(name, memory, &1)),
       :jump_if,
       &(&1 != 0)
     )
@@ -241,7 +268,7 @@ defmodule Intcode.Computer do
       name,
       memory,
       params
-      |> Enum.map(&get_value(memory, &1)),
+      |> Enum.map(&get_value(name, memory, &1)),
       :jump_if,
       &(&1 == 0)
     )
@@ -255,7 +282,7 @@ defmodule Intcode.Computer do
     execute_instruction(name, memory, params, :simple_infix, &(&1 * &2))
   end
 
-  def execute_instruction(name, memory, [], :halt) do
+  def execute_instruction(name, memory, params, :halt) do
     {:halt, memory}
   end
 
@@ -263,15 +290,19 @@ defmodule Intcode.Computer do
     ip + count + 1
   end
 
-  def get_value(_memory, value: x, mode: :immediate), do: x
-  def get_value(memory, value: x, mode: :position), do: get_addr(memory, x)
+  def get_base(name), do: Intcode.Computer.IO.get_relative_base(name)
+
+
+  def get_value(name, _memory, value: x, mode: :immediate), do: x
+  def get_value(name, memory, mode: :output, value: x), do: get_addr(memory, x)
+  def get_value(name, memory, value: x, mode: :position), do: get_addr(memory, x)
+  def get_value(name, memory, value: x, mode: :relative), do: get_addr(memory, x + get_base(name))
 
   @doc """
   Gets the value at `address` in memory
   """
   def get_addr(memory, address) do
-    #    Utils.log_inspect(address, "Address")
-    Enum.at(memory, address)
+    Map.get(memory, address, 0)
   end
 
   @doc """
@@ -329,6 +360,7 @@ defmodule Intcode.Computer do
     |> Enum.map(fn {parameter, mode} -> [value: parameter, mode: mode] end)
   end
 
+  def num_to_mode(?2), do: :relative
   def num_to_mode(?1), do: :immediate
   def num_to_mode(?0), do: :position
 
@@ -337,6 +369,7 @@ defmodule Intcode.Computer do
   the number of parameters `count` from the `memory`
   """
   def get_parameters_for_instruction(memory, ip, %Instruction{parameters: count} = instruction) do
-    Enum.slice(memory, (ip + 1)..(ip + count))
+    (ip + 1)..(ip + count)
+    |> Enum.map(fn index -> Map.get(memory, index) end)
   end
 end

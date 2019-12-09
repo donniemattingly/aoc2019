@@ -5,19 +5,18 @@ defmodule ComputerTest do
 
   setup do
     %{
-      name:
-        :crypto.strong_rand_bytes(10)
-        |> Base.url_encode64()
-        |> binary_part(0, 10)
+      name: Computer.random_name()
     }
   end
 
   test "Simple Add", %{name: name} do
-    assert Computer.execute({name, [1, 0, 0, 0, 99], 0}) == {:finished, [2, 0, 0, 0, 99], 0}
+    {status, memory, ip} =  Computer.execute({name, [1, 0, 0, 0, 99], 0})
+    assert Computer.memory_map_to_list(memory) ==  [2, 0, 0, 0, 99]
   end
 
   test "Simple Multiply", %{name: name} do
-    assert Computer.execute({name, [2, 3, 0, 3, 99], 0}) == {:finished, [2, 3, 0, 6, 99], 0}
+    {status, memory, ip} =   Computer.execute({name, [2, 3, 0, 3, 99], 0})
+    assert Computer.memory_map_to_list(memory) ==  [2, 3, 0, 6, 99]
   end
 
   test "Day 2 Part 1 Works", %{name: name} do
@@ -27,7 +26,7 @@ defmodule ComputerTest do
       |> List.replace_at(1, 12)
       |> List.replace_at(2, 2)
 
-    assert (Computer.execute({name, input, 0}) |> elem(1) |> hd()) == 3_267_740
+    assert (Computer.execute({name, input, 0}) |> elem(1) |> Map.get(0)) == 3_267_740
   end
 
   test "Day 5 part 1 works", %{name: name} do
@@ -140,7 +139,7 @@ defmodule ComputerTest do
   test "Simple Add w/ Supervised Computer", %{name: name} do
     Intcode.Supervisor.start_computer(name, [1, 0, 0, 0, 99])
     Computer.run(name)
-    assert Computer.get_memory(name) == [2, 0, 0, 0, 99]
+    assert Computer.get_memory(name) |> Computer.memory_map_to_list() == [2, 0, 0, 0, 99]
   end
 
   test "Computer.run returns output", %{name: name} do
@@ -148,5 +147,22 @@ defmodule ComputerTest do
     Intcode.Supervisor.start_computer(name, program)
     Computer.IO.push_input(name, 12)
     assert Computer.run(name) == {:finished, 1}
+  end
+
+  test "Relative base works", %{name: name} do
+    program = [109, 2000, 99]
+    Intcode.Supervisor.start_computer(name, program)
+    Computer.run(name)
+    base = Computer.IO.dump_state(name) |> Keyword.get(:base)
+    assert base == 2000
+  end
+
+  test "Relative base instruction produces correct output", %{name: name} do
+    program = [109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99]
+    Intcode.Supervisor.start_computer(name, program)
+    Computer.IO.reset(name)
+    Computer.run(name)
+    output = Computer.IO.dump_state(name) |> Keyword.get(:output) |> Enum.reverse
+    assert program == output
   end
 end
