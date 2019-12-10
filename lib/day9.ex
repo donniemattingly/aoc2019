@@ -45,7 +45,6 @@ defmodule Day9 do
   def parse_input2(input), do: parse_input(input)
 
   def solve1(input), do: solve(input)
-  def solve2(input), do: solve(input)
 
   def parse_input(input) do
     input |> String.split(",", trim: true) |> Enum.map(&String.to_integer/1)
@@ -56,6 +55,14 @@ defmodule Day9 do
     Intcode.Supervisor.start_computer(name)
     Intcode.Computer.set_memory(name, input)
     Intcode.Computer.IO.push_input(name, 1)
+    Intcode.Computer.run(name)
+  end
+
+  def solve2(input) do
+    name = Intcode.Computer.random_name()
+    Intcode.Supervisor.start_computer(name)
+    Intcode.Computer.set_memory(name, input)
+    Intcode.Computer.IO.push_input(name, 2)
     Intcode.Computer.run(name)
   end
 end

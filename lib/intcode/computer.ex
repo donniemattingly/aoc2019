@@ -190,16 +190,19 @@ defmodule Intcode.Computer do
     end
   end
 
+
+  ######## Instructions ########
+
   def execute_instruction(name, memory, [a, b, c], :simple_infix, fun) do
     input1 = get_value(name, memory, a)
     input2 = get_value(name, memory, b)
-    output = get_value(name, memory, Keyword.put(c, :mode, :output))
+    output = get_output(name, c)
 
     {:ok, Map.put(memory, output, fun.(input1, input2))}
   end
 
   def execute_instruction(name, memory, [a], :input) do
-    output = get_value(name, memory, Keyword.put(a, :mode, :output))
+    output = get_output(name, a)
     case Intcode.Computer.IO.dequeue_input(name)  do
       nil -> {:waiting, memory}
       x -> {:ok, Map.put(memory, output, x)}
@@ -207,9 +210,8 @@ defmodule Intcode.Computer do
   end
 
   def execute_instruction(name, memory, [a], :output) do
-    output = get_value(name, memory, Keyword.put(a, :mode, :output))
+    output = get_value(name, memory, a)
     Intcode.Computer.IO.push_output(name, output)
-    IO.inspect(output)
     {:ok, memory}
   end
 
@@ -221,7 +223,7 @@ defmodule Intcode.Computer do
 
   def execute_instruction(name, m, [a, b, c], :compare, comparator) do
     replacement = if comparator.(get_value(name, m, a), get_value(name, m, b)), do: 1, else: 0
-    output = get_value(name, m, Keyword.put(c, :mode, :output))
+    output = get_output(name, c)
     {:ok, Map.put(m, output, replacement)}
   end
 
@@ -292,9 +294,11 @@ defmodule Intcode.Computer do
 
   def get_base(name), do: Intcode.Computer.IO.get_relative_base(name)
 
+  def get_output(name, value: x, mode: :immediate), do: x
+  def get_output(name, value: x, mode: :position), do: x
+  def get_output(name, value: x, mode: :relative), do: x + get_base(name)
 
   def get_value(name, _memory, value: x, mode: :immediate), do: x
-  def get_value(name, memory, mode: :output, value: x), do: get_addr(memory, x)
   def get_value(name, memory, value: x, mode: :position), do: get_addr(memory, x)
   def get_value(name, memory, value: x, mode: :relative), do: get_addr(memory, x + get_base(name))
 

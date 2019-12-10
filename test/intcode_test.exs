@@ -157,6 +157,15 @@ defmodule ComputerTest do
     assert base == 2000
   end
 
+  test "relative output", %{name: name} do
+    program = [109, 10, 204, -8, 99]
+    Intcode.Supervisor.start_computer(name, program)
+    Computer.run(name)
+    input = Computer.IO.dump_state(name) |> Keyword.get(:output)
+
+    assert input == [204]
+  end
+
   test "Relative base instruction produces correct output", %{name: name} do
     program = [109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99]
     Intcode.Supervisor.start_computer(name, program)
