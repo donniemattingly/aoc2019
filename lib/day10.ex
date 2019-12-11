@@ -157,7 +157,7 @@ defmodule Day10 do
   end
 
   def get_slope({x1, y1} = p1, {x2, y2} = p2) do
-    :math.atan2(y2 - y1, x2 - x1)
+    :math.atan2(y2 - y1, x2 - x1) - :math.pi() / 2
   end
 
   def collect_by_slopes({slope, point}, map) do

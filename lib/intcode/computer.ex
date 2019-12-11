@@ -37,7 +37,7 @@ defmodule Intcode.Computer do
   end
 
   def handle_call({:set_memory, new_memory}, _from, {name, _memory, ip}) do
-    {:reply, new_memory, {name, new_memory, ip}}
+    {:reply, new_memory, {name, new_memory, 0}}
   end
 
   def handle_call(:get_memory, _from, {name, memory, ip}) do
@@ -184,7 +184,7 @@ defmodule Intcode.Computer do
         execute({name, new_memory, new_ip})
       {:waiting, new_memory} ->
         new_ip = update_instruction_pointer(ip, instruction)
-        {:waiting, new_memory, update_instruction_pointer(ip, instruction)}
+        {:waiting, new_memory, ip}
       {:halt, new_memory} ->
         {:finished, new_memory, 0}
     end
