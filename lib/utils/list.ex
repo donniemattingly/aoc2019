@@ -30,4 +30,8 @@ defmodule Utils.List do
     do: Enum.reverse(l) |> Utils.List.left_rotate(n) |> Enum.reverse()
 
   def right_rotate(l, n), do: left_rotate(l, -n)
+
+  def zip_with_index(list) do
+    Enum.zip(list, 0..length(list) - 1)
+  end
 end
