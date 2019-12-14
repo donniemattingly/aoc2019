@@ -38,7 +38,7 @@ defmodule Intcode.Computer.IO do
   end
 
   def pop_output(name) do
-#    IO.inspect({:pop_output, name, dump_state(name)})
+    IO.inspect({:pop_output, name, dump_state(name)})
     Agent.get_and_update(via_tuple(name), fn state -> pop(state, :output)  end)
   end
 
