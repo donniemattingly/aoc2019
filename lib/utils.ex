@@ -123,4 +123,14 @@ defmodule Utils do
   end
 
   def log_inspect(value), do: value
+
+
+  def nested_tuple_to_list(list) when is_list(list) do
+    Enum.map(list, &nested_tuple_to_list/1)
+  end
+
+  def nested_tuple_to_list(tuple) when is_tuple(tuple) do
+    tuple |> Tuple.to_list |> Enum.map(&nested_tuple_to_list/1)
+  end
+  def nested_tuple_to_list(x), do: x
 end
