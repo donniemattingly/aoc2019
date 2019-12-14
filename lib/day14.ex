@@ -87,16 +87,76 @@ defmodule Day14 do
     Map.get(known_costs, chemical) * cost
   end
 
-  def reduce_cost({known_costs, {inputs, output}}) do
+  def initial_known_costs(costs) do
+    costs
+    |> Enum.filter(fn {inputs, output} ->
+      inputs |> Keyword.keys |> Enum.all?(& (&1 == :ORE))
+    end)
+    |> Enum.reduce(%{}, fn {inputs, {chemical, amount}}, acc ->
+      ore_cost = inputs
+      |> Keyword.values
+      |> Enum.sum
+
+      ratio = {ore_cost, amount}
+
+      Map.update(acc, chemical, [ratio], fn x -> [ratio | x] end)
+    end)
+  end
+
+  def reduce_cost({known_costs, {inputs, {chemical, amount}}}) do
     if can_reduce?(known_costs, inputs) do
       sum = inputs
       |> Enum.map(&map_input(known_costs, &1))
       |> Enum.sum
-      Map.put()
+
+
     else
-      {known_costs, {inputs, output}}
+      {known_costs, {inputs, {chemical, amount}}}
     end
   end
+
+  def costs_list_to_map(costs) do
+    costs
+    |> Enum.map(fn {inputs, {chemical, amount}} ->
+      {chemical, {amount, inputs}}
+    end)
+    |> Enum.into(%{})
+  end
+
+  def is_primary?({inputs, _}) do
+    inputs
+    |> Keyword.keys
+    |> Enum.all?(& &1 == :ORE)
+  end
+
+  def group_by_origin(costs) do
+    costs |> Enum.group_by(fn x ->
+      if is_primary?(x), do: :primary, else: :derived
+    end)
+  end
+
+
+  @doc"""
+  Want to reduce all derived costs to known values.
+  """
+  def reduce_derived(known, derived) do
+    derived
+    |> Enum.reduce(known, fn {inputs, {chemical, amount}}, acc ->
+      if can_reduce?(known, inputs) do
+        inputs
+        |> Enum.map(fn {input_chem, input_cost} ->
+
+        end)
+      else
+        acc
+      end
+    end)
+  end
+
+  @doc"""
+  The idea here is for nodes to be map of chemicals to current cost.
+  """
+  def reachable_neighbors(), do: nil
 
   def solve(input) do
     input
