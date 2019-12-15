@@ -124,6 +124,26 @@ defmodule Utils do
 
   def log_inspect(value), do: value
 
+  def flatten_map(map) when is_map(map) do
+    map
+    |> Map.to_list
+    |> do_flatten([])
+    |> IO.inspect
+    |> Map.new
+  end
+
+  defp do_flatten([], acc), do: acc
+
+  defp do_flatten([{_k, v} | rest], acc) when is_map(v) do
+    v = Map.to_list(v)
+    flattened_subtree = do_flatten(v, acc)
+    do_flatten(flattened_subtree ++ rest, acc)
+  end
+
+  defp do_flatten([kv | rest], acc) do
+    do_flatten(rest, [kv | acc])
+  end
+
 
   def nested_tuple_to_list(list) when is_list(list) do
     Enum.map(list, &nested_tuple_to_list/1)
