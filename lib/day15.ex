@@ -102,4 +102,36 @@ defmodule Day15 do
   def move(name, [], output) do
     output
   end
+
+  def render_tile(tile) do
+    case tile do
+      :wall -> "█"
+      :open -> " "
+      :ox -> "X"
+      _ -> "?"
+    end
+  end
+
+  def print_screen(screen) do
+    {{minx, miny}, {maxx, maxy}} = screen
+                                   |> Map.keys
+                                   |> Enum.min_max
+    string_screen = miny - 1..maxy + 1
+                    |> Enum.map(
+                         fn y ->
+                           minx..maxx
+                           |> Enum.map(
+                                fn x ->
+                                  Map.get(screen, {x, y})
+                                  |> render_tile
+                                end
+                              )
+                           |> Enum.join("")
+                         end
+                       )
+                    |> Enum.join("\n")
+
+
+    string_screen <> "\n\n"
+  end
 end
