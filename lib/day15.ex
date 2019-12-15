@@ -91,6 +91,10 @@ defmodule Day15 do
     results = move(name, path, [])
   end
 
+  def move_smart(name, current_pos, last_move, visited) do
+
+  end
+
   def move(name, [current | rest ], outputs) do
     Intcode.Computer.IO.push_input(name, current)
     Intcode.Computer.run(name)
