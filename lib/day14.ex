@@ -139,58 +139,8 @@ defmodule Day14 do
     }
   end
 
-  def reduce_costs(costs) do
-
-  end
-
-  def can_reduce?(known_costs, inputs) do
-    known_set = known_costs
-                |> Map.keys
-                |> MapSet.new
-    input_set = inputs
-                |> Keyword.keys
-                |> MapSet.new
-
-    MapSet.subset?(input_set, known_set)
-  end
-
   def map_input(known_costs, {chemical, cost}) do
     Map.get(known_costs, chemical) * cost
-  end
-
-  def initial_known_costs(costs) do
-    costs
-    |> Enum.filter(
-         fn {inputs, output} ->
-           inputs
-           |> Keyword.keys
-           |> Enum.all?(&(&1 == :ORE))
-         end
-       )
-    |> Enum.reduce(
-         %{},
-         fn {inputs, {chemical, amount}}, acc ->
-           ore_cost = inputs
-                      |> Keyword.values
-                      |> Enum.sum
-
-           ratio = {ore_cost, amount}
-
-           Map.update(acc, chemical, [ratio], fn x -> [ratio | x] end)
-         end
-       )
-  end
-
-  def reduce_cost({known_costs, {inputs, {chemical, amount}}}) do
-    if can_reduce?(known_costs, inputs) do
-      sum = inputs
-            |> Enum.map(&map_input(known_costs, &1))
-            |> Enum.sum
-
-
-    else
-      {known_costs, {inputs, {chemical, amount}}}
-    end
   end
 
   def costs_list_to_map(costs) do
@@ -218,81 +168,6 @@ defmodule Day14 do
        )
   end
 
-
-  @doc"""
-  Want to reduce all derived costs to known values.
-  """
-  def reduce_derived(known, derived) do
-    derived
-    |> Enum.reduce(
-         known,
-         fn {inputs, {chemical, amount}}, acc ->
-           if can_reduce?(known, inputs) do
-             inputs
-             |> Enum.map(
-                  fn {input_chem, input_cost} ->
-
-                  end
-                )
-           else
-             acc
-           end
-         end
-       )
-  end
-
-  @doc"""
-  The idea here is for nodes to be map of chemicals to current cost.
-  """
-  def reachable_neighbors(), do: nil
-
-  def foo(costs) do
-    grouped = group_by_origin(costs)
-    known = grouped.primary
-            |> Enum.map(&elem(&1, 1))
-            |> Enum.map(&elem(&1, 0))
-            |> MapSet.new
-    derived = grouped.derived
-  end
-
-  def update_known_reducer({inputs, {chemical, amount} = output} = formula, {primary_chemicals, known}) do
-    if is_fully_reduced?(formula, primary_chemicals) do
-      Map.put()
-    end
-  end
-
-
-  @doc"""
-  This reduce expects to reduce a list of formulas that are not fully reduced
-  i.e. their inputs are not comprised exclusively of primary chemicals
-
-  `reduced_formulas` is a map of output to {amount, formula}
-  """
-  def collapse_derived_reducer(
-        {inputs, {chemical, amount} = output} = formula,
-        {primary_chemicals, reduced_formulas, list} = acc
-      ) do
-    new_formula = map_input_element_to_primary_reduction(output, reduced_formulas)
-    if is_fully_reduced?(new_formula, primary_chemicals) do
-      {primary_chemicals, Map.put(reduced_formulas, chemical, {amount, new_formula}), [new_formula | list]}
-    else
-      {primary_chemicals, reduced_formulas, [formula | list]}
-    end
-  end
-
-  def map_input_element_to_primary_reduction({chemical, amount}, reduced_formulas) do
-    {Map.get(reduced_formulas, chemical, chemical), amount}
-  end
-
-  def is_fully_reduced?(formula, primary_chemicals) do
-    formula_chemicals = formula
-                        |> Utils.nested_tuple_to_list
-                        |> List.flatten
-                        |> Enum.filter(&is_atom/1)
-                        |> MapSet.new
-                        |> MapSet.subset?(primary_chemicals)
-  end
-
   def solve(input) do
     primaries = get_primaries(input)
     fuel_costs = input
@@ -301,7 +176,9 @@ defmodule Day14 do
                  |> costs_list_to_map
                  |> get_required_fuel(:FUEL)
 
+
     get_ore_cost(primaries, fuel_costs)
+    IO.inspect({primaries, fuel_costs})
   end
 
   def get_required_fuel(cost_map, :ORE), do: 1
@@ -364,9 +241,16 @@ defmodule Day14 do
     fuel
     |> Enum.map(
          fn {reagent, amount} ->
-           (amount / get_in(primaries, [reagent, :increment]))
-           |> ceil
-           |> Kernel.*(get_in(primaries, [reagent, :ore]))
+           used = (amount / get_in(primaries, [reagent, :increment]))
+                  |> Kernel.*(get_in(primaries, [reagent, :ore]))
+
+           generated = (amount / get_in(primaries, [reagent, :increment]))
+                       |> ceil
+                       |> Kernel.*(get_in(primaries, [reagent, :ore]))
+
+           IO.puts("waste for #{reagent}: #{generated - used}")
+
+           generated
          end
        )
     |> Enum.sum
@@ -379,13 +263,21 @@ defmodule Day14 do
                     {
                       chem,
                       get_required_fuel(cost_map, chem)
-                      |> map_cost(fn x -> (cost * x) / amount_produced end)
+                      |> map_cost(fn x -> ceil((cost * x) / amount_produced) end)
                     }
+                    |> IO.inspect
                   end
                 )
              |> Enum.reduce(%{}, &sum_primary_reagents/2)
              |> flatten
 
     result
+  end
+
+  def get_replacement_order(input) do
+    edges = input
+    |> Enum.flat_map(fn {inputs, {a, _}} -> Enum.map(inputs, fn {b, _} -> {a, b} end) end)
+
+    Graph.new |> Graph.add_edges(edges) |> Graph.topsort
   end
 end
