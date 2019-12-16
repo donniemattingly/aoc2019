@@ -142,7 +142,7 @@ defmodule Day15 do
     end
   end
 
-  def digraph_shortest_path(grid) do
+  def grid_to_graph(grid) do
     g = :digraph.new()
 
     grid
@@ -161,10 +161,13 @@ defmodule Day15 do
            :digraph.add_edge(g, b, a)
          end
        )
-
-    goal = goal(grid)
-    :digraph.get_short_path(g, {0, 0}, goal) |> length
   end
+
+  def digraph_shortest_path(grid), do: nil
+#
+#    goal = goal(grid)
+#    :digraph.get_short_path(g, {0, 0}, goal) |> length
+#  end
 
   @doc"""
   if our last outcome moved us to a new square, we'll travel to the next open or unvisited square
@@ -190,7 +193,7 @@ defmodule Day15 do
   end
 
   def smart_move(name, current_pos, last_move, last_outcome, visited) do
-        print_screen(visited |> Map.put(current_pos, :current)) |>  IO.puts
+#        print_screen(visited |> Map.put(current_pos, :current)) |>  IO.puts
     #    IO.inspect({name, current_pos, last_move, last_outcome, visited})
     next_move = determine_next_move2(current_pos, last_move, last_outcome, visited)
     Intcode.Computer.IO.push_input(name, next_move)
