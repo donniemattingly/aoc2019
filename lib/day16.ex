@@ -7,13 +7,12 @@ defmodule Day16 do
 
   def sample_input do
     """
-    12345678
+    80871224585914546619083218645595
     """
   end
 
   def sample_input2 do
-    """
-    """
+    "80871224585914546619083218645595"
   end
 
   def sample do
@@ -49,7 +48,10 @@ defmodule Day16 do
           |> String.duplicate(10000)
           |> parse_input
 
-  def solve1(input), do: solve(input)
+  def solve1(input),
+      do: solve(input)
+          |> Enum.take(8)
+          |> Enum.join
   def solve2(input), do: solve(input)
 
   def parse_input(input) do
@@ -60,12 +62,7 @@ defmodule Day16 do
   end
 
   def solve(input) do
-    input
-    |> phase_times(100)
-  end
-
-  def solve(input) do
-
+    solve_matrex(input)
   end
 
   def phase_times(input, 0), do: input
@@ -77,18 +74,74 @@ defmodule Day16 do
 
   def phase(input) do
     0..length(input) - 1
-    |> Flow.from_enumerable
-    |> Flow.map(&calculate_element(input, &1))
+    |> Enum.map(&calculate_element(input, &1))
     |> Enum.to_list
   end
 
   def calculate_element(input, position) do
-    pattern = snth_output(position + 1)
+    pattern = nth_output(position + 1)
     Stream.zip(input, pattern)
     |> Stream.map(fn {x, y} -> x * y end)
     |> Enum.sum
     |> rem(10)
     |> abs
+  end
+
+  def matrix_for_size(size) do
+    Matrex.new(size, size, fn (x, y) -> funcnth(x - 1, y - 1) end)
+  end
+
+  def solve_matrex(input) do
+    matrix = input |> length |> matrix_for_size
+    phases_matrex(matrix, input, 100)
+  end
+
+  def phases_matrex(matrix, input, 0), do: input
+  def phases_matrex(matrix, input, times) do
+    result = phase_matrex(input, matrix)
+    result |> Enum.join |> IO.inspect
+    phases_matrex(matrix, result, times - 1)
+  end
+
+  def phase_matrex(input, multiples_matrix) do
+    input_matrix = Matrex.reshape(input, length(input), 1)
+    res = Matrex.dot(multiples_matrix, input_matrix)
+    Matrex.apply(
+      res,
+      fn x ->
+        x
+        |> floor
+        |> rem(10)
+        |> abs end
+    )
+    |> Enum.map(&floor/1)
+  end
+
+
+  @doc"""
+  the row maps to the index of the char in the string we're working with
+  so row 0 -> [0, 1, 0, -1]...
+        1 -> [0, 0, 1, 1, 0, 0, -1, -1]...
+    etc
+
+  idea is to first find where the index is in relation to the pattern
+  pattern is length 4n where n is the row. so col % 4n gives us the relative
+  position in a single pattern. we can then do
+  """
+  def funcnth(0, col), do: Enum.at([0, 1, 0, -1], rem(col + 1, 4))
+  def funcnth(row, col) do
+    n = row + 1
+    m = col + 1# one for zero index, one for shifting left
+    pos_in_pattern = rem(m, 4 * n)
+
+    # now we need to normalize around 4
+    divisor = 4 * n
+    case floor((4 * pos_in_pattern) / divisor) do
+      0 -> 0
+      1 -> 1
+      2 -> 0
+      3 -> -1
+    end
   end
 
   def snth_output(val) do
