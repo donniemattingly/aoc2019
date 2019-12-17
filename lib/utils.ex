@@ -153,4 +153,24 @@ defmodule Utils do
     tuple |> Tuple.to_list |> Enum.map(&nested_tuple_to_list/1)
   end
   def nested_tuple_to_list(x), do: x
+
+  def color_for_digit(digit) do
+    colors = ["#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4",
+      "#46f0f0", "#f032e6", "#bcf60c", "#fabebe", "#008080", "#e6beff",
+      "#9a6324", "#fffac8", "#800000", "#aaffc3", "#808000", "#ffd8b1",
+      "#000075", "#808080", "#ffffff", "#000000"]
+
+    Enum.at(colors, digit |> String.to_integer)
+  end
+
+  def colorize_digit(digit) do
+    import IO.ANSI
+    digit <> (digit |> color_for_digit |> color_background)
+  end
+
+  def colorize_digits(digits) do
+    String.split(digits, trim: true)
+    |> Enum.map(&colorize_digit/1)
+    |> Enum.join
+  end
 end
