@@ -1,4 +1,6 @@
 defmodule Utils.Graph do
+  use Memoize
+
   @doc """
   Performs a breadth first search starting at `node` The neighbors for `node` are determined
   by `neighbors_fn`
@@ -32,29 +34,32 @@ defmodule Utils.Graph do
     queue = PriorityQueue.new() |> PriorityQueue.push(node, 1)
     discovered = Map.new() |> Map.put(node, :start)
 
-    do_bfs(neighbors_fn, queue, discovered)
+    do_bfs(neighbors_fn, queue, discovered, %{})
   end
 
-  defp do_bfs(neighbors_fn, queue, discovered) do
+  def do_bfs(neighbors_fn, queue, discovered, known) do
     case PriorityQueue.pop(queue) do
       {:empty, _} ->
         {node, discovered}
 
       {{:value, v}, new_queue} ->
-        {updated_queue, updated_discovered} =
-          neighbors_fn.(v)
-          |> Enum.reduce({new_queue, discovered}, fn w, {q, d} ->
-            case Map.has_key?(d, w) do
-              true -> {q, d}
-              false -> {PriorityQueue.push(q, w, 1), Map.put(d, w, v)}
-            end
-          end)
+        case Map.get(known, v) do
+          nil -> {updated_queue, updated_discovered} =
+                   neighbors_fn.(v)
+                   |> Enum.reduce({new_queue, discovered}, fn w, {q, d} ->
+                     case Map.has_key?(d, w) do
+                       true -> {q, d}
+                       false -> {PriorityQueue.push(q, w, 1), Map.put(d, w, v)}
+                     end
+                   end)
 
-        if :rand.uniform() > 0.9999 do
-          updated_discovered |> get_path(v) |> length |> to_string |> IO.puts()
+                 if :rand.uniform() > 0.9999 do
+                   updated_discovered |> get_path(v) |> length |> to_string |> IO.puts()
+                 end
+
+                 do_bfs(neighbors_fn, updated_queue, updated_discovered, Map.put(known, v, {updated_queue, updated_discovered}))
+          {q, d} -> do_bfs(neighbors_fn, q, d, known)
         end
-
-        do_bfs(neighbors_fn, updated_queue, updated_discovered)
     end
   end
 

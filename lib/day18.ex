@@ -1,8 +1,14 @@
 defmodule Day18 do
   @moduledoc false
 
+  use Memoize
+
   def real_input do
     Utils.get_input(18, 1)
+  end
+
+  def real_input2 do
+    Utils.get_input(18, 2)
   end
 
   def sample_input do
@@ -17,6 +23,13 @@ defmodule Day18 do
 
   def sample_input2 do
     """
+    #############
+    #DcBa.#.GhKl#
+    #.###1#2#I###
+    #e#d#####j#k#
+    ###C#4#3###J#
+    #fEbA.#.FgHi#
+    #############
     """
   end
 
@@ -45,13 +58,11 @@ defmodule Day18 do
   end
 
   def real_input1, do: real_input()
-  def real_input2, do: real_input()
 
   def parse_input1(input), do: parse_input(input)
   def parse_input2(input), do: parse_input(input)
 
   def solve1(input), do: solve(input)
-  def solve2(input), do: solve(input)
 
   def parse_input(input) do
     input
@@ -67,6 +78,10 @@ defmodule Day18 do
       "#" -> :wall
       "." -> :open
       "@" -> :start
+      "1" -> {:bot, 1}
+      "2" -> {:bot, 2}
+      "3" -> {:bot, 3}
+      "4" -> {:bot, 4}
       char -> if String.upcase(char) == char, do: {:door, char}, else: {:key, String.upcase(char)}
     end)
   end
@@ -82,6 +97,9 @@ defmodule Day18 do
 
   def is_key?({:key, _}), do: true
   def is_key?(_), do: false
+
+  def is_bot?({:bot, _}), do: true
+  def is_bot?(_), do: false
 
   def can_visit?(:wall, _), do: false
   def can_visit?(:open, _), do: true
@@ -108,18 +126,47 @@ defmodule Day18 do
     |> Enum.map(fn {new_pos, type} -> move_to_pos(keys, new_pos, type) end)
   end
 
+
+  @doc"""
+  Alright - state here is just the same as above, but we have 4 positions and only one can change at a time
+  """
+  def neighbors_fn2({keys, positions}, map) do
+    positions
+    |> Map.to_list
+    |> Enum.map(fn {name, pos} -> {name, neighbors_fn({keys, pos}, map)} end)
+    |> Enum.flat_map(fn {name, new_states} -> new_states |> Enum.map(fn {keys, pos} -> {keys, Map.put(positions, name, pos)} end) end)
+  end
+
   def start(input_map) do
     start_point = input_map |> Map.to_list |> Enum.find(fn {k, v} -> v == :start end) |> elem(0)
     num_keys = input_map |> Map.to_list |> Enum.filter(fn {k, v} ->  is_key?(v) end) |> length
     {start_point, num_keys, Map.put(input_map, start_point, :open)}
   end
 
+  def start2(input_map) do
+    num_keys = input_map |> Map.to_list |> Enum.filter(fn {k, v} ->  is_key?(v) end) |> length
+    bots = input_map |> Map.to_list |> Enum.filter(fn {k, v} ->  is_bot?(v) end) |> Enum.reduce(%{}, fn {k, v}, acc ->
+      Map.put(acc, elem(v, 1), k)
+    end)
+    map = bots |> Map.values |> Enum.reduce(input_map, fn x, acc -> Map.put(acc, x, :open) end)
+    {bots, num_keys, map}
+  end
+
   def find_end_node(paths_map, num_keys) do
     paths_map |> Map.keys |> Enum.find(fn {k, v} -> MapSet.size(k) == num_keys end)
   end
 
+  def shortest_path(paths, num_keys) do
+    paths
+    |> Map.keys
+    |> Enum.filter(fn {k, v} -> MapSet.size(k) == num_keys end)
+    |> Enum.map(&Utils.Graph.get_path(paths, &1))
+    |> Enum.map(&length/1)
+    |> Enum.min
+  end
+
   def solve(input) do
-    {start_point, num_keys, map} = start(input)
+    {start_point, num_keys, map} = start2(input)
     {_, graph} = Utils.Graph.bfs({MapSet.new, start_point}, fn {keys, pos} ->
       cond do
         MapSet.size(keys) == num_keys -> []
@@ -129,9 +176,20 @@ defmodule Day18 do
 
     goal = find_end_node(graph, num_keys)
 
+    shortest_path(graph, num_keys)
+  end
 
-#    length(path) - 1
+  def solve2(input) do
+    {bots, num_keys, map} = start2(input)
+    {_, graph} = Utils.Graph.bfs({MapSet.new, bots}, fn {keys, pos} ->
+      cond do
+        MapSet.size(keys) == num_keys -> []
+        true -> neighbors_fn2({keys, pos}, map)
+      end
+    end)
 
-    path = Utils.Graph.get_path(graph, goal) |> IO.inspect
+    goal = find_end_node(graph, num_keys)
+
+    shortest_path(graph, num_keys)
   end
 end
