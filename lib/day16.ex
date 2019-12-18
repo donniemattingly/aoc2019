@@ -5,6 +5,12 @@ defmodule Day16 do
     Utils.get_input(16, 1)
   end
 
+  def offset(input) do
+    input
+    |> String.slice(0, 7)
+    |> String.to_integer
+  end
+
   def sample_input do
     """
     80871224585914546619083218645595
@@ -12,7 +18,7 @@ defmodule Day16 do
   end
 
   def sample_input2 do
-    "80871224585914546619083218645595"
+    "03036732577212944063491565474664"
   end
 
   def sample do
@@ -46,13 +52,15 @@ defmodule Day16 do
   def parse_input2(input),
       do: input
           |> String.duplicate(10000)
-          |> parse_input
+          |> String.trim
+          |> String.split("", trim: true)
+          |> Enum.map(&String.to_integer/1)
+          |> Enum.slice(-1 * Day16.offset(input)..-1)
 
   def solve1(input),
       do: solve(input)
           |> Enum.take(8)
           |> Enum.join
-  def solve2(input), do: solve(input)
 
   def parse_input(input) do
     input
@@ -65,11 +73,38 @@ defmodule Day16 do
     solve_matrex(input)
   end
 
+  def solve2(input) do
+    partial_phase_times(input, 100)
+    |> Enum.take(8)
+    |> Enum.join()
+  end
+
   def phase_times(input, 0), do: input
   def phase_times(input, times) do
     IO.inspect(times)
     result = phase(input)
     phase_times(result, times - 1)
+  end
+
+  def partial_reducer(x, {sum, list}) do
+    next = sum - x
+    digit = next
+            |> floor
+            |> rem(10)
+            |> abs
+    {next, [next | list]}
+  end
+
+  def partial_phase_times(input, 0), do: input
+  def partial_phase_times(input, times) do
+    IO.inspect(times)
+    {_, result} = partial_phase(input)
+    partial_phase_times(result, times - 1)
+  end
+
+  def partial_phase(input) do
+    input
+    |> Enum.reduce({Enum.sum(input), []}, &partial_reducer/2)
   end
 
   def phase(input) do
@@ -92,14 +127,19 @@ defmodule Day16 do
   end
 
   def solve_matrex(input) do
-    matrix = input |> length |> matrix_for_size
+    matrix = input
+             |> length
+             |> matrix_for_size
     phases_matrex(matrix, input, 100)
   end
 
   def phases_matrex(matrix, input, 0), do: input
   def phases_matrex(matrix, input, times) do
     result = phase_matrex(input, matrix)
-    result |> Enum.join |> IO.inspect
+    result
+    |> Enum.join
+    |> Utils.colorize_digits
+    |> IO.puts
     phases_matrex(matrix, result, times - 1)
   end
 
@@ -112,7 +152,8 @@ defmodule Day16 do
         x
         |> floor
         |> rem(10)
-        |> abs end
+        |> abs
+      end
     )
     |> Enum.map(&floor/1)
   end

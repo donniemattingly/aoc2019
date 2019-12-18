@@ -1,4 +1,5 @@
 %{
+  "color_utils": {:hex, :color_utils, "0.2.0", "bbcf48e74e1da14bfc7b513a44fe518b5a7062d29e1ed3fd7cf0704e2f422a2f", [:mix], [], "hexpm"},
   "comb": {:git, "https://github.com/tallakt/comb.git", "e6660924891d88d798494ab0c5adeefb29fae8b8", []},
   "combine": {:hex, :combine, "0.10.0", "eff8224eeb56498a2af13011d142c5e7997a80c8f5b97c499f84c841032e429f", [:mix], [], "hexpm"},
   "earmark": {:hex, :earmark, "1.4.3", "364ca2e9710f6bff494117dbbd53880d84bebb692dafc3a78eb50aa3183f2bfd", [:mix], [], "hexpm"},

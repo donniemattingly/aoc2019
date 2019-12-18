@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/lib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/color_utils" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/comb" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/combine" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/earmark" />
@@ -35,6 +36,7 @@
       <excludeFolder url="file://$MODULE_DIR$/doc" />
       <excludeFolder url="file://$MODULE_DIR$/logs" />
     </content>
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="matrex" level="project" />
     <orderEntry type="library" name="libgraph" level="project" />
@@ -56,5 +58,7 @@
     <orderEntry type="library" name="stream_data" level="project" />
     <orderEntry type="library" name="combine" level="project" />
     <orderEntry type="library" name="benchfella" level="project" />
+    <orderEntry type="library" name="color_utils" level="project" />
+    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
   </component>
 </module>

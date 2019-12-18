@@ -32,6 +32,7 @@ defmodule Adventofcode.MixProject do
       {:flow, "~> 0.14"},
       {:memoize, "~> 1.2"},
       {:combine, "~> 0.10.0"},
+      {:color_utils, "0.2.0"},
       {:comb, git: "https://github.com/tallakt/comb.git"}
     ]
   end
