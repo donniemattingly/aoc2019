@@ -6,9 +6,10 @@ defmodule Day16 do
   end
 
   def offset(input) do
-    input
+    res = input
     |> String.slice(0, 7)
     |> String.to_integer
+    res |> IO.inspect
   end
 
   def sample_input do
@@ -18,7 +19,7 @@ defmodule Day16 do
   end
 
   def sample_input2 do
-    "03036732577212944063491565474664"
+    "02935109699940807407585447034323"
   end
 
   def sample do
@@ -55,7 +56,7 @@ defmodule Day16 do
           |> String.trim
           |> String.split("", trim: true)
           |> Enum.map(&String.to_integer/1)
-          |> Enum.slice(-1 * Day16.offset(input)..-1)
+          |> Enum.drop(offset(input))
 
   def solve1(input),
       do: solve(input)
@@ -86,25 +87,25 @@ defmodule Day16 do
     phase_times(result, times - 1)
   end
 
-  def partial_reducer(x, {sum, list}) do
-    next = sum - x
-    digit = next
-            |> floor
-            |> rem(10)
-            |> abs
-    {next, [next | list]}
+  def partial_reducer(x, list) do
+    case list do
+      [] -> [x]
+      [n | _] -> [rem(x + n, 10) | list ]
+    end
   end
 
   def partial_phase_times(input, 0), do: input
   def partial_phase_times(input, times) do
     IO.inspect(times)
-    {_, result} = partial_phase(input)
+    result = partial_phase(input)
     partial_phase_times(result, times - 1)
   end
 
   def partial_phase(input) do
+    sum = Enum.sum(input)
+
     input
-    |> Enum.reduce({Enum.sum(input), []}, &partial_reducer/2)
+    |> List.foldr([], &partial_reducer/2)
   end
 
   def phase(input) do
