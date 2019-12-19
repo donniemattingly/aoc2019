@@ -58,7 +58,6 @@ defmodule Day17 do
   def parse_input2(input), do: parse_input(input)
 
   def solve1(input), do: solve(input)
-  def solve2(input), do: solve(input)
 
   def parse_input(input) do
     input
@@ -86,11 +85,16 @@ defmodule Day17 do
     |> Enum.sum
   end
 
+  def solve2(program) do
+    get_path(program)
+  end
+
   def render_tile(tile) do
     import IO.ANSI
     case tile do
       :path -> white() <> "█"
       :intersection -> green() <> "█"
+      :start -> red() <> "█"
       nil -> white() <> " "
     end
   end
@@ -133,13 +137,16 @@ defmodule Day17 do
   end
 
   def scaffolding_string_to_set_of_points(scaffolding) do
-    scaffolding
-    |> to_string
+    str = scaffolding |> to_string
+
+    IO.puts(str)
+
+    str
     |> String.split("\n", trim: true)
     |> Enum.map(&parse_scaffolding_row/1)
     |> Utils.list_of_lists_to_map_by_point
     |> Map.to_list
-    |> Enum.filter(fn {point, space} -> space == :scaffold end)
+    |> Enum.filter(fn {point, space} -> space == :scaffold  || space == :start end)
     |> Enum.map(&elem(&1, 0))
     |> MapSet.new
   end
@@ -147,7 +154,11 @@ defmodule Day17 do
   def parse_scaffolding_row(row) do
     row
     |> String.split("", trim: true)
-    |> Enum.map(fn space -> if space in ["#", "<", ">", "^", "v"], do: :scaffold, else: :space end)
+    |> Enum.map(fn
+      "#" -> :scaffold
+      "^" -> :start
+      _ -> :space
+    end)
   end
 
   def set_of_neighbors({x, y}) do
@@ -184,5 +195,24 @@ defmodule Day17 do
     Computer.run(name)
     output = Computer.IO.dump_state(name)
              |> Keyword.get(:output)
+             |> Enum.reverse
+  end
+
+  def get_path(program) do
+    main = 'A,A,B,C,B,C,B,A,C,A'
+    funcs = [
+      ['R,8', 44, 'L,12', 44, 'R,8'],
+      ['L,10', 44, 'L,10', 44, 'R,8'],
+      ['L,12', 44, 'L,12', 44, 'L,10', 44, 'R,10']
+    ]
+    program = List.replace_at(program, 0, 2)
+    alias Intcode.Computer
+    name = Computer.random_name()
+    Intcode.Supervisor.start_computer(name)
+    Computer.set_memory(name, program)
+    Computer.run(name)
+    output = Computer.IO.dump_state(name)
+             |> Keyword.get(:output)
+             |> Enum.reverse
   end
 end
