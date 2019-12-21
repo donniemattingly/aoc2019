@@ -98,7 +98,6 @@ defmodule Day17 do
       nil -> white() <> " "
     end
   end
-
   def print_scaffolding(scaffolding_set, intersections) do
     map = scaffolding_set
           |> Enum.map(fn p -> {p, :path} end)
